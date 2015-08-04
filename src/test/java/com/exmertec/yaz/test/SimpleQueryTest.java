@@ -93,6 +93,83 @@ public class SimpleQueryTest {
         assertThat(result.size()).isEqualTo(0);
     }
 
+    @Test
+    public void should_query_when_eq_null() throws Exception {
+        prepareUser("name");
+        prepareUser(null);
+
+        List<User> result = new UserDao() {
+            public List<User> queryList() {
+                return with(field("name").eq(null)).queryList();
+            }
+        }.queryList();
+
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.get(0).getName()).isNull();
+    }
+
+    @Test
+    public void should_query_when_ne_null() throws Exception {
+        prepareUser("name");
+        prepareUser(null);
+
+        List<User> result = new UserDao() {
+            public List<User> queryList() {
+                return with(field("name").ne(null)).queryList();
+            }
+        }.queryList();
+
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.get(0).getName()).isEqualTo("name");
+    }
+
+    @Test
+    public void should_query_page_with_index_and_size() throws Exception {
+        prepareUser("n1");
+        prepareUser("n2");
+        prepareUser("n3");
+        prepareUser("n4");
+        prepareUser("s1");
+        prepareUser("s2");
+
+        List<User> result = new UserDao() {
+            public List<User> queryList() {
+                return with(field("name").like("n")).queryPage(2, 1);
+            }
+        }.queryList();
+
+        assertThat(result.size()).isEqualTo(2);
+        assertThat(result.get(0).getName()).startsWith("n");
+        assertThat(result.get(1).getName()).startsWith("n");
+    }
+
+    @Test
+    public void should_query_single_result() throws Exception {
+        prepareUser("n1");
+        prepareUser("n2");
+
+        User user = new UserDao() {
+            public User query() {
+                return with(field("name").eq("n1")).querySingle();
+            }
+        }.query();
+
+        assertThat(user).isNotNull();
+        assertThat(user.getName()).isEqualTo("n1");
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void should_throw_when_query_single_has_multi_result() throws Exception {
+        prepareUser("n1");
+        prepareUser("n2");
+
+        new UserDao() {
+            public User query() {
+                return with(field("name").like("n")).querySingle();
+            }
+        }.query();
+    }
+
     private Long prepareUser(String name) {
         UserDao userDao = new UserDao();
 
