@@ -2,6 +2,7 @@ package com.exmertec.yaz.builder;
 
 import com.exmertec.yaz.core.Query;
 import com.exmertec.yaz.core.QueryBuilder;
+import com.exmertec.yaz.core.ThreadLocalEntityManagerHelper;
 import com.exmertec.yaz.query.ComparableBetweenQuery;
 import com.exmertec.yaz.query.ComparableCompareQuery;
 import com.exmertec.yaz.query.EmptyQuery;
@@ -16,12 +17,12 @@ import com.exmertec.yaz.query.NumberCompareQuery;
 import javax.persistence.EntityManager;
 
 public class FieldQueryBuilder implements QueryBuilder {
-    private EntityManager entityManager;
-    private String fieldName;
+    private final EntityManager entityManager;
+    private final String fieldName;
 
-    public FieldQueryBuilder(EntityManager entityManager, String fieldName) {
-        this.entityManager = entityManager;
+    public FieldQueryBuilder(String fieldName) {
         this.fieldName = fieldName;
+        this.entityManager = ThreadLocalEntityManagerHelper.getEntityManager();
     }
 
     @Override

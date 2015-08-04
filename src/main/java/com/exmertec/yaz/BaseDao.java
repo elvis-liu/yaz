@@ -7,27 +7,24 @@ import com.exmertec.yaz.core.AdvancedCommandBuilder;
 import com.exmertec.yaz.core.BasicCommandBuilder;
 import com.exmertec.yaz.core.Query;
 import com.exmertec.yaz.core.QueryBuilder;
+import com.exmertec.yaz.core.ThreadLocalEntityManagerHelper;
 
 import org.apache.log4j.Logger;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 public abstract class BaseDao<T> {
     private static final Logger LOG = Logger.getLogger(BaseDao.class);
 
-    @PersistenceContext
-    protected EntityManager entityManager;
+    protected final EntityManager entityManager;
 
     private final Class<T> prototype;
-
-    public BaseDao(Class<T> prototype) {
-        this.prototype = prototype;
-    }
 
     public BaseDao(EntityManager entityManager, Class<T> prototype) {
         this.entityManager = entityManager;
         this.prototype = prototype;
+
+        ThreadLocalEntityManagerHelper.setEntityManager(entityManager);
     }
 
     public void save(T entity) {
@@ -46,11 +43,11 @@ public abstract class BaseDao<T> {
         return new IdEqualsCommandBuilder<>(entityManager, prototype, id);
     }
 
-    protected AdvancedCommandBuilder<T> with(Query... queries) {
+    public AdvancedCommandBuilder<T> with(Query... queries) {
         return new CoreCommandBuilder<>(entityManager, prototype).with(queries);
     }
 
-    protected QueryBuilder field(String fieldName) {
-        return new FieldQueryBuilder(entityManager, fieldName);
+    public static QueryBuilder field(String fieldName) {
+        return new FieldQueryBuilder(fieldName);
     }
 }
