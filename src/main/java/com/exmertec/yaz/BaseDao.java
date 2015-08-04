@@ -13,7 +13,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 public abstract class BaseDao<T> {
-    private static final Logger log = Logger.getLogger(BaseDao.class);
+    private static final Logger LOG = Logger.getLogger(BaseDao.class);
 
     @PersistenceContext
     protected EntityManager entityManager;
@@ -41,7 +41,7 @@ public abstract class BaseDao<T> {
         entityManager.remove(entity);
     }
 
-    protected BasicCommandBuilder<T> idEquals(Object id) {
+    public BasicCommandBuilder<T> idEquals(Object id) {
         return new IdEqualsCommandBuilder<>(entityManager, prototype, id);
     }
 
