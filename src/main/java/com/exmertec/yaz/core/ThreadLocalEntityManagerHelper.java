@@ -3,6 +3,7 @@ package com.exmertec.yaz.core;
 import org.apache.log4j.Logger;
 
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
 
 public class ThreadLocalEntityManagerHelper {
     private static final Logger LOG = Logger.getLogger(ThreadLocalEntityManagerHelper.class);
@@ -26,5 +27,9 @@ public class ThreadLocalEntityManagerHelper {
         }
 
         return entityManager;
+    }
+
+    public static CriteriaBuilder getCriteriaBuilder() {
+        return getEntityManager().getCriteriaBuilder();
     }
 }

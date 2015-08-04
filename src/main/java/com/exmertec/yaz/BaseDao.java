@@ -8,6 +8,7 @@ import com.exmertec.yaz.core.BasicCommandBuilder;
 import com.exmertec.yaz.core.Query;
 import com.exmertec.yaz.core.QueryBuilder;
 import com.exmertec.yaz.core.ThreadLocalEntityManagerHelper;
+import com.exmertec.yaz.query.BooleanQuery;
 
 import org.apache.log4j.Logger;
 
@@ -49,5 +50,13 @@ public abstract class BaseDao<T> {
 
     public static QueryBuilder field(String fieldName) {
         return new FieldQueryBuilder(fieldName);
+    }
+
+    public static Query and(Query... queries) {
+        return new BooleanQuery(ThreadLocalEntityManagerHelper.getCriteriaBuilder()::and, queries);
+    }
+
+    public static Query or(Query... queries) {
+        return new BooleanQuery(ThreadLocalEntityManagerHelper.getCriteriaBuilder()::or, queries);
     }
 }

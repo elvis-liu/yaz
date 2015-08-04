@@ -1,6 +1,8 @@
 package com.exmertec.yaz.test;
 
+import static com.exmertec.yaz.BaseDao.and;
 import static com.exmertec.yaz.BaseDao.field;
+import static com.exmertec.yaz.BaseDao.or;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.exmertec.yaz.model.User;
@@ -82,5 +84,32 @@ public class SimpleQueryTest extends TestBase {
 
         assertThat(result.size()).isEqualTo(1);
         assertThat(result.get(0).getName()).isEqualTo("name");
+    }
+
+    @Test
+    public void should_query_with_and() throws Exception {
+        prepareUser("abc");
+        prepareUser("aaa");
+        prepareUser("bbb");
+
+        List<User> result = new UserDao().where(and(field("name").like("a"), field("name").like("ab"))).queryList();
+
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.get(0).getName()).isEqualTo("abc");
+    }
+
+    @Test
+    public void should_query_with_or() throws Exception {
+        prepareUser("abc");
+        prepareUser("aaa");
+        prepareUser("bbb");
+
+        List<User> result = new UserDao().where(or(field("name").like("ab"), field("name").like("aa")))
+            .ascendingBy("name")
+            .queryList();
+
+        assertThat(result.size()).isEqualTo(2);
+        assertThat(result.get(0).getName()).isEqualTo("aaa");
+        assertThat(result.get(1).getName()).isEqualTo("abc");
     }
 }
