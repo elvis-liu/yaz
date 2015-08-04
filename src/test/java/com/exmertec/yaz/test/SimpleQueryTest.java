@@ -36,13 +36,13 @@ public class SimpleQueryTest {
     }
 
     @Test
-    public void should_query_by_like() throws Exception {
+    public void should_query_when_like() throws Exception {
         final String userName = "name";
         prepareUser(userName);
 
         List<User> result = new UserDao() {
             public List<User> queryList() {
-                return with(field(userName).like(userName.substring(1))).queryList();
+                return with(field("name").like(userName.substring(1))).queryList();
             }
         }.queryList();
 
@@ -51,14 +51,42 @@ public class SimpleQueryTest {
     }
 
     @Test
-    public void should_query_if_not_like() throws Exception {
+    public void should_query_when_not_like() throws Exception {
         final String userName = "name";
         final String notLike = "not_like";
         prepareUser(userName);
 
         List<User> result = new UserDao() {
             public List<User> queryList() {
-                return with(field(userName).like(notLike)).queryList();
+                return with(field("name").like(notLike)).queryList();
+            }
+        }.queryList();
+
+        assertThat(result.size()).isEqualTo(0);
+    }
+
+    @Test
+    public void should_query_when_in_conditions() throws Exception {
+        prepareUser("name1");
+        prepareUser("name2");
+
+        List<User> result = new UserDao() {
+            public List<User> queryList() {
+                return with(field("name").in("name1")).queryList();
+            }
+        }.queryList();
+
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.get(0).getName()).isEqualTo("name1");
+    }
+
+    @Test
+    public void should_query_when_in_empty_conditions() throws Exception {
+        prepareUser("name");
+
+        List<User> result = new UserDao() {
+            public List<User> queryList() {
+                return with(field("name").in()).queryList();
             }
         }.queryList();
 
