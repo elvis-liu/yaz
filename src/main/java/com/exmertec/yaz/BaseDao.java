@@ -43,8 +43,8 @@ public abstract class BaseDao<T> {
         return new IdEqualsCommandBuilder<>(entityManager, prototype, id);
     }
 
-    public AdvancedCommandBuilder<T> with(Query... queries) {
-        return new CoreCommandBuilder<>(entityManager, prototype).with(queries);
+    public AdvancedCommandBuilder<T> where(Query... queries) {
+        return new CoreCommandBuilder<>(entityManager, prototype).where(queries);
     }
 
     public static QueryBuilder field(String fieldName) {

@@ -128,7 +128,7 @@ public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T> {
     }
 
     @Override
-    public AdvancedCommandBuilder<T> with(Query... queries) {
+    public AdvancedCommandBuilder<T> where(Query... queries) {
         addedQueries.addAll(Arrays.asList(queries));
         return this;
     }

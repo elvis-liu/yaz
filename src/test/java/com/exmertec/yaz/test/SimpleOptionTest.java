@@ -19,7 +19,7 @@ public class SimpleOptionTest extends TestBase {
         prepareUser("d");
         prepareUser("a");
 
-        List<User> result = new UserDao().with().ascendingBy("name").queryList();
+        List<User> result = new UserDao().where().ascendingBy("name").queryList();
 
         assertThat(result.get(0).getName()).isEqualTo("a");
         assertThat(result.get(1).getName()).isEqualTo("b");
@@ -34,7 +34,7 @@ public class SimpleOptionTest extends TestBase {
         prepareUser("d");
         prepareUser("a");
 
-        List<User> result = new UserDao().with().descendingBy("name").queryList();
+        List<User> result = new UserDao().where().descendingBy("name").queryList();
 
         assertThat(result.get(0).getName()).isEqualTo("d");
         assertThat(result.get(1).getName()).isEqualTo("c");
@@ -46,7 +46,7 @@ public class SimpleOptionTest extends TestBase {
     public void should_accept_lock_by() throws Exception {
         prepareUser("a");
 
-        User user = new UserDao().with(field("name").eq("a")).lockBy(LockModeType.PESSIMISTIC_WRITE).querySingle();
+        User user = new UserDao().where(field("name").eq("a")).lockBy(LockModeType.PESSIMISTIC_WRITE).querySingle();
 
         assertThat(entityManager.getLockMode(user)).isEqualTo(LockModeType.PESSIMISTIC_WRITE);
     }

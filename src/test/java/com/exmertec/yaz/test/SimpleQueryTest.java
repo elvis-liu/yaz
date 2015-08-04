@@ -25,7 +25,7 @@ public class SimpleQueryTest extends TestBase {
         final String userName = "name";
         prepareUser(userName);
 
-        List<User> result = new UserDao().with(field("name").like(userName.substring(1))).queryList();
+        List<User> result = new UserDao().where(field("name").like(userName.substring(1))).queryList();
 
         assertThat(result.size()).isEqualTo(1);
         assertThat(result.get(0).getName()).isEqualTo(userName);
@@ -37,7 +37,7 @@ public class SimpleQueryTest extends TestBase {
         final String notLike = "not_like";
         prepareUser(userName);
 
-        List<User> result = new UserDao().with(field("name").like(notLike)).queryList();
+        List<User> result = new UserDao().where(field("name").like(notLike)).queryList();
 
         assertThat(result.size()).isEqualTo(0);
     }
@@ -47,7 +47,7 @@ public class SimpleQueryTest extends TestBase {
         prepareUser("name1");
         prepareUser("name2");
 
-        List<User> result = new UserDao().with(field("name").in("name1")).queryList();
+        List<User> result = new UserDao().where(field("name").in("name1")).queryList();
 
         assertThat(result.size()).isEqualTo(1);
         assertThat(result.get(0).getName()).isEqualTo("name1");
@@ -57,7 +57,7 @@ public class SimpleQueryTest extends TestBase {
     public void should_query_when_in_empty_conditions() throws Exception {
         prepareUser("name");
 
-        List<User> result = new UserDao().with(field("name").in()).queryList();
+        List<User> result = new UserDao().where(field("name").in()).queryList();
 
         assertThat(result.size()).isEqualTo(0);
     }
@@ -67,7 +67,7 @@ public class SimpleQueryTest extends TestBase {
         prepareUser("name");
         prepareUser(null);
 
-        List<User> result = new UserDao().with(field("name").eq(null)).queryList();
+        List<User> result = new UserDao().where(field("name").eq(null)).queryList();
 
         assertThat(result.size()).isEqualTo(1);
         assertThat(result.get(0).getName()).isNull();
@@ -78,7 +78,7 @@ public class SimpleQueryTest extends TestBase {
         prepareUser("name");
         prepareUser(null);
 
-        List<User> result = new UserDao().with(field("name").ne(null)).queryList();
+        List<User> result = new UserDao().where(field("name").ne(null)).queryList();
 
         assertThat(result.size()).isEqualTo(1);
         assertThat(result.get(0).getName()).isEqualTo("name");
@@ -93,7 +93,7 @@ public class SimpleQueryTest extends TestBase {
         prepareUser("s1");
         prepareUser("s2");
 
-        List<User> result = new UserDao().with(field("name").like("n")).queryPage(2, 1);
+        List<User> result = new UserDao().where(field("name").like("n")).queryPage(2, 1);
 
         assertThat(result.size()).isEqualTo(2);
         assertThat(result.get(0).getName()).startsWith("n");
@@ -105,7 +105,7 @@ public class SimpleQueryTest extends TestBase {
         prepareUser("n1");
         prepareUser("n2");
 
-        User user = new UserDao().with(field("name").eq("n1")).querySingle();
+        User user = new UserDao().where(field("name").eq("n1")).querySingle();
 
         assertThat(user).isNotNull();
         assertThat(user.getName()).isEqualTo("n1");
@@ -116,6 +116,6 @@ public class SimpleQueryTest extends TestBase {
         prepareUser("n1");
         prepareUser("n2");
 
-        new UserDao().with(field("name").like("n")).querySingle();
+        new UserDao().where(field("name").like("n")).querySingle();
     }
 }
