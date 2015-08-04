@@ -29,8 +29,8 @@ signing {
 }
 
 ext.getPropertyIfExists = { propertyName ->
-    if (hasProperty(propertyName)) {
-        return property(propertyName);
+    if (project(":").hasProperty(propertyName)) {
+        return project(":").property(propertyName);
     } else {
         return null;
     }
