@@ -4,32 +4,20 @@ import static java.util.stream.Collectors.toList;
 
 import com.exmertec.yaz.core.AdvancedCommandBuilder;
 import com.exmertec.yaz.core.Query;
+import com.exmertec.yaz.core.SelectionBuilder;
 
 import org.apache.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
-import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
 
-public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T> {
+public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T>, CriteriaQueryGenerator<T> {
     private static final Logger LOG = Logger.getLogger(CoreCommandBuilder.class);
 
-    private final EntityManager entityManager;
     private final Class<T> prototype;
 
     private final List<Query> addedQueries = new LinkedList<>();
@@ -38,8 +26,7 @@ public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T> {
 
     private List<OrderByRule> orderByRules = new LinkedList<>();
 
-    public CoreCommandBuilder(EntityManager entityManager, Class<T> prototype) {
-        this.entityManager = entityManager;
+    public CoreCommandBuilder(Class<T> prototype) {
         this.prototype = prototype;
     }
 
@@ -67,13 +54,13 @@ public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T> {
 
     @Override
     public Long count() {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         return doQuerySingleForType(Long.class, criteriaBuilder::count);
     }
 
     @Override
     public Long distinctCount(String fieldName) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         return doQuerySingleForType(Long.class, root -> criteriaBuilder.countDistinct(root.get(fieldName)));
     }
 
@@ -133,99 +120,28 @@ public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T> {
         return this;
     }
 
-    private Root<T> getRoot(CriteriaQuery<?> criteriaQuery) {
-        Set<Root<?>> roots = criteriaQuery.getRoots();
-        if (roots.size() != 1) {
-            throw new IllegalStateException("Query contains more than one root entity!");
-        }
-
-        return (Root<T>) roots.iterator().next();
+    @Override
+    public SelectionBuilder select() {
+        return new CoreSelectionBuilder(this);
     }
 
-    private <R> CriteriaQuery<R> createQuery(Class<R> resultType) {
-        CriteriaQuery<R> criteriaQuery = entityManager.getCriteriaBuilder().createQuery(resultType);
-        criteriaQuery.from(prototype);
-
-        return criteriaQuery;
+    @Override
+    public Class<T> getProtoType() {
+        return prototype;
     }
 
-    private CriteriaQuery<T> createQueryCriteriaByAttributes() {
-        CriteriaQuery<T> criteriaQuery = createQuery(prototype);
-        criteriaQuery.select(getRoot(criteriaQuery));
-
-        return criteriaQuery;
+    @Override
+    public LockModeType getLockMode() {
+        return lockModeType;
     }
 
-    private Predicate[] generateRestrictions(AbstractQuery<?> abstractQuery, List<Query> queries) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        return queries.stream()
-            .map(query -> Optional.of(query.toRestrictions(criteriaBuilder, abstractQuery)).get())
-            .flatMap(restrictions -> restrictions.stream())
-            .toArray(Predicate[]::new);
+    @Override
+    public List<OrderByRule> getOrderByRules() {
+        return orderByRules;
     }
 
-    private void addQueryOptions(TypedQuery<?> query) {
-        if (lockModeType != null) {
-            query.setLockMode(lockModeType);
-        }
-    }
-
-    private <R> R doQuerySingleForType(Class<R> resultType, Function<Root<T>, Selection<R>> selectionFunction) {
-        CriteriaQuery<R> criteriaQuery = createQuery(resultType);
-
-        criteriaQuery.select(selectionFunction.apply(getRoot(criteriaQuery)));
-
-        Predicate[] generatedRestrictions = generateRestrictions(criteriaQuery, addedQueries);
-
-        criteriaQuery.where(generatedRestrictions);
-        TypedQuery<R> query = entityManager.createQuery(criteriaQuery);
-        addQueryOptions(query);
-
-        return query.getSingleResult();
-    }
-
-    private List<T> doQueryList(Consumer<TypedQuery<T>> queryManipulator) {
-        CriteriaQuery<T> criteria = createQueryCriteriaByAttributes();
-        appendOrderBy(entityManager.getCriteriaBuilder(), criteria);
-
-        Predicate[] generatedRestrictions = generateRestrictions(criteria, addedQueries);
-
-        criteria.where(generatedRestrictions);
-
-        TypedQuery<T> query = entityManager.createQuery(criteria);
-        if (queryManipulator != null) {
-            queryManipulator.accept(query);
-        }
-        addQueryOptions(query);
-
-        return query.getResultList();
-    }
-
-    private void appendOrderBy(CriteriaBuilder criteriaBuilder, CriteriaQuery<T> criteria) {
-        final Root<?> entity = criteria.getRoots().iterator().next();
-
-        if (!orderByRules.isEmpty()) {
-            criteria.orderBy(orderByRules.stream()
-                                 .map(rule -> rule.getOrder(criteriaBuilder, entity))
-                                 .collect(toList()));
-        }
-    }
-
-    private static class OrderByRule {
-        private boolean isAscending;
-        private String fieldName;
-
-        public OrderByRule(boolean isAscending, String fieldName) {
-            this.isAscending = isAscending;
-            this.fieldName = fieldName;
-        }
-
-        public Order getOrder(CriteriaBuilder criteriaBuilder, Root<?> entity) {
-            if (isAscending) {
-                return criteriaBuilder.asc(entity.get(fieldName));
-            } else {
-                return criteriaBuilder.desc(entity.get(fieldName));
-            }
-        }
+    @Override
+    public List<Query> getQueries() {
+        return addedQueries;
     }
 }

@@ -41,11 +41,11 @@ public abstract class BaseDao<T> {
     }
 
     public BasicCommandBuilder<T> idEquals(Object id) {
-        return new IdEqualsCommandBuilder<>(entityManager, prototype, id);
+        return new IdEqualsCommandBuilder<>(prototype, id);
     }
 
     public AdvancedCommandBuilder<T> where(Query... queries) {
-        return new CoreCommandBuilder<>(entityManager, prototype).where(queries);
+        return new CoreCommandBuilder<>(prototype).where(queries);
     }
 
     public static QueryBuilder field(String fieldName) {

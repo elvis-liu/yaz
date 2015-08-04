@@ -26,4 +26,6 @@ public interface AdvancedCommandBuilder<T> extends BasicCommandBuilder<T> {
 
     // queries
     AdvancedCommandBuilder<T> where(Query... queries);
+
+    SelectionBuilder select();
 }
