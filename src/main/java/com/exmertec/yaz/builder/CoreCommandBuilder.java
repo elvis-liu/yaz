@@ -133,24 +133,6 @@ public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T> {
         return this;
     }
 
-    @Override
-    public AdvancedCommandBuilder<T> and(Query... queries) {
-        addedQueries.add((criteriaBuilder, abstractQuery) -> {
-            Predicate[] restrictions = generateRestrictions(abstractQuery, Arrays.asList(queries));
-            return Arrays.asList(criteriaBuilder.and(restrictions));
-        });
-        return this;
-    }
-
-    @Override
-    public AdvancedCommandBuilder<T> or(Query... queries) {
-        addedQueries.add((criteriaBuilder, abstractQuery) -> {
-            Predicate[] restrictions = generateRestrictions(abstractQuery, Arrays.asList(queries));
-            return Arrays.asList(criteriaBuilder.or(restrictions));
-        });
-        return this;
-    }
-
     private Root<T> getRoot(CriteriaQuery<?> criteriaQuery) {
         Set<Root<?>> roots = criteriaQuery.getRoots();
         if (roots.size() != 1) {
