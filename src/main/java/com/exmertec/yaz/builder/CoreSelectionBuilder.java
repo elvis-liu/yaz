@@ -16,7 +16,36 @@ public class CoreSelectionBuilder<T> implements SelectionBuilder {
     @Override
     public Long distinctCount() {
         return criteriaQueryGenerator.doQuerySingleForType(Long.class,
-                                                           root -> getCriteriaBuilder().countDistinct(root.get(fieldName)));
+                                                           root -> getCriteriaBuilder().countDistinct(
+                                                               root.get(fieldName)));
+    }
+
+    @Override
+    public Double avg() {
+        return criteriaQueryGenerator.doQuerySingleForType(Double.class,
+                                                           root -> getCriteriaBuilder().avg(
+                                                               root.get(fieldName)));
+    }
+
+    @Override
+    public <T extends Number> T min(Class<T> targetType) {
+        return criteriaQueryGenerator.doQuerySingleForType(targetType,
+                                                           root -> getCriteriaBuilder().min(
+                                                               root.get(fieldName)));
+    }
+
+    @Override
+    public <T extends Number> T max(Class<T> targetType) {
+        return criteriaQueryGenerator.doQuerySingleForType(targetType,
+                                                           root -> getCriteriaBuilder().max(
+                                                               root.get(fieldName)));
+    }
+
+    @Override
+    public <T extends Number> T sum(Class<T> targetType) {
+        return criteriaQueryGenerator.doQuerySingleForType(targetType,
+                                                           root -> getCriteriaBuilder().sum(
+                                                               root.get(fieldName)));
     }
 
     private CriteriaBuilder getCriteriaBuilder() {

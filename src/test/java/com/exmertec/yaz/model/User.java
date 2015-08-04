@@ -17,6 +17,12 @@ public class User {
     @Column(name = "name", length = 64)
     private String name;
 
+    @Column(name = "points")
+    private Integer points;
+
+    @Column(name = "type")
+    private UserType type;
+
     public Long getId() {
         return id;
     }
@@ -31,5 +37,21 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Integer getPoints() {
+        return points;
+    }
+
+    public void setPoints(Integer points) {
+        this.points = points;
+    }
+
+    public UserType getType() {
+        return type;
+    }
+
+    public void setType(UserType type) {
+        this.type = type;
     }
 }

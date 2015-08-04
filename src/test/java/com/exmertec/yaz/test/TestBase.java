@@ -2,6 +2,7 @@ package com.exmertec.yaz.test;
 
 import com.exmertec.yaz.BaseDao;
 import com.exmertec.yaz.model.User;
+import com.exmertec.yaz.model.UserType;
 
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -21,18 +22,42 @@ public abstract class TestBase {
     protected EntityManager entityManager;
 
     protected Long prepareUser(String name) {
-        UserDao userDao = new UserDao();
+        return buildUser().name(name).save();
+    }
 
-        User user = new User();
-        user.setName(name);
-        userDao.save(user);
-
-        return user.getId();
+    protected UserBuilder buildUser() {
+        return new UserBuilder();
     }
 
     protected class UserDao extends BaseDao<User> {
         public UserDao() {
             super(TestBase.this.entityManager, User.class);
+        }
+    }
+
+    protected class UserBuilder {
+        User user = new User();
+
+        public UserBuilder name(String name) {
+            user.setName(name);
+            return this;
+        }
+
+        public UserBuilder points(Integer points) {
+            user.setPoints(points);
+            return this;
+        }
+
+        public UserBuilder type(UserType type) {
+            user.setType(type);
+            return this;
+        }
+
+        public Long save() {
+            UserDao userDao = new UserDao();
+            userDao.save(user);
+
+            return user.getId();
         }
     }
 }

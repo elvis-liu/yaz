@@ -16,4 +16,47 @@ public class SelectActionTest extends TestBase {
 
         assertThat(count).isEqualTo(1);
     }
+
+    @Test
+    public void should_accept_avg() throws Exception {
+        buildUser().points(3).save();
+        buildUser().points(5).save();
+
+        Double avg = new UserDao().where(field("points").ne(null)).select("points").avg();
+
+        assertThat(avg).isEqualTo(4);
+    }
+
+    @Test
+    public void should_accept_min() throws Exception {
+        buildUser().points(3).save();
+        buildUser().points(5).save();
+        buildUser().points(2).save();
+
+        Integer min = new UserDao().where(field("points").ne(null)).select("points").min(Integer.class);
+
+        assertThat(min).isEqualTo(2);
+    }
+
+    @Test
+    public void should_accept_max() throws Exception {
+        buildUser().points(3).save();
+        buildUser().points(5).save();
+        buildUser().points(2).save();
+
+        Integer max = new UserDao().where(field("points").ne(null)).select("points").max(Integer.class);
+
+        assertThat(max).isEqualTo(5);
+    }
+
+    @Test
+    public void should_accept_sum() throws Exception {
+        buildUser().points(3).save();
+        buildUser().points(5).save();
+        buildUser().points(2).save();
+
+        Integer sum = new UserDao().where(field("points").ne(null)).select("points").sum(Integer.class);
+
+        assertThat(sum).isEqualTo(10);
+    }
 }
