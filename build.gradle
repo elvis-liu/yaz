@@ -25,17 +25,25 @@ signing {
     sign configurations.archives
 }
 
+ext.getPropertyIfExists = { propertyName ->
+    if (hasProperty(propertyName)) {
+        return property(propertyName);
+    } else {
+        return null;
+    }
+}
+
 uploadArchives {
     repositories {
         mavenDeployer {
             beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
             repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
+                authentication(userName: getPropertyIfExists("ossrhUsername"), password: getPropertyIfExists("ossrhPassword"))
             }
 
             snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
+                authentication(userName: getPropertyIfExists("ossrhUsername"), password: getPropertyIfExists("ossrhPassword"))
             }
 
             pom.project {
