@@ -83,39 +83,4 @@ public class SimpleQueryTest extends TestBase {
         assertThat(result.size()).isEqualTo(1);
         assertThat(result.get(0).getName()).isEqualTo("name");
     }
-
-    @Test
-    public void should_query_page_with_index_and_size() throws Exception {
-        prepareUser("n1");
-        prepareUser("n2");
-        prepareUser("n3");
-        prepareUser("n4");
-        prepareUser("s1");
-        prepareUser("s2");
-
-        List<User> result = new UserDao().where(field("name").like("n")).queryPage(2, 1);
-
-        assertThat(result.size()).isEqualTo(2);
-        assertThat(result.get(0).getName()).startsWith("n");
-        assertThat(result.get(1).getName()).startsWith("n");
-    }
-
-    @Test
-    public void should_query_single_result() throws Exception {
-        prepareUser("n1");
-        prepareUser("n2");
-
-        User user = new UserDao().where(field("name").eq("n1")).querySingle();
-
-        assertThat(user).isNotNull();
-        assertThat(user.getName()).isEqualTo("n1");
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void should_throw_when_query_single_has_multi_result() throws Exception {
-        prepareUser("n1");
-        prepareUser("n2");
-
-        new UserDao().where(field("name").like("n")).querySingle();
-    }
 }
