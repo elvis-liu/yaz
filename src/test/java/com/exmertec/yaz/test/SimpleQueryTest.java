@@ -1,5 +1,6 @@
 package com.exmertec.yaz.test;
 
+import static com.exmertec.yaz.BaseDao.field;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.exmertec.yaz.model.User;
@@ -14,8 +15,7 @@ public class SimpleQueryTest extends TestBase {
         String userName = "name";
         Long id = prepareUser(userName);
 
-        UserDao userDao = new UserDao();
-        User queriedUser = userDao.idEquals(id).querySingle();
+        User queriedUser = new UserDao().idEquals(id).querySingle();
 
         assertThat(queriedUser.getName()).isEqualTo(userName);
     }
@@ -25,11 +25,7 @@ public class SimpleQueryTest extends TestBase {
         final String userName = "name";
         prepareUser(userName);
 
-        List<User> result = new UserDao() {
-            public List<User> queryList() {
-                return with(field("name").like(userName.substring(1))).queryList();
-            }
-        }.queryList();
+        List<User> result = new UserDao().with(field("name").like(userName.substring(1))).queryList();
 
         assertThat(result.size()).isEqualTo(1);
         assertThat(result.get(0).getName()).isEqualTo(userName);
@@ -41,11 +37,7 @@ public class SimpleQueryTest extends TestBase {
         final String notLike = "not_like";
         prepareUser(userName);
 
-        List<User> result = new UserDao() {
-            public List<User> queryList() {
-                return with(field("name").like(notLike)).queryList();
-            }
-        }.queryList();
+        List<User> result = new UserDao().with(field("name").like(notLike)).queryList();
 
         assertThat(result.size()).isEqualTo(0);
     }
@@ -55,11 +47,7 @@ public class SimpleQueryTest extends TestBase {
         prepareUser("name1");
         prepareUser("name2");
 
-        List<User> result = new UserDao() {
-            public List<User> queryList() {
-                return with(field("name").in("name1")).queryList();
-            }
-        }.queryList();
+        List<User> result = new UserDao().with(field("name").in("name1")).queryList();
 
         assertThat(result.size()).isEqualTo(1);
         assertThat(result.get(0).getName()).isEqualTo("name1");
@@ -69,11 +57,7 @@ public class SimpleQueryTest extends TestBase {
     public void should_query_when_in_empty_conditions() throws Exception {
         prepareUser("name");
 
-        List<User> result = new UserDao() {
-            public List<User> queryList() {
-                return with(field("name").in()).queryList();
-            }
-        }.queryList();
+        List<User> result = new UserDao().with(field("name").in()).queryList();
 
         assertThat(result.size()).isEqualTo(0);
     }
@@ -83,11 +67,7 @@ public class SimpleQueryTest extends TestBase {
         prepareUser("name");
         prepareUser(null);
 
-        List<User> result = new UserDao() {
-            public List<User> queryList() {
-                return with(field("name").eq(null)).queryList();
-            }
-        }.queryList();
+        List<User> result = new UserDao().with(field("name").eq(null)).queryList();
 
         assertThat(result.size()).isEqualTo(1);
         assertThat(result.get(0).getName()).isNull();
@@ -98,11 +78,7 @@ public class SimpleQueryTest extends TestBase {
         prepareUser("name");
         prepareUser(null);
 
-        List<User> result = new UserDao() {
-            public List<User> queryList() {
-                return with(field("name").ne(null)).queryList();
-            }
-        }.queryList();
+        List<User> result = new UserDao().with(field("name").ne(null)).queryList();
 
         assertThat(result.size()).isEqualTo(1);
         assertThat(result.get(0).getName()).isEqualTo("name");
@@ -117,11 +93,7 @@ public class SimpleQueryTest extends TestBase {
         prepareUser("s1");
         prepareUser("s2");
 
-        List<User> result = new UserDao() {
-            public List<User> queryList() {
-                return with(field("name").like("n")).queryPage(2, 1);
-            }
-        }.queryList();
+        List<User> result = new UserDao().with(field("name").like("n")).queryPage(2, 1);
 
         assertThat(result.size()).isEqualTo(2);
         assertThat(result.get(0).getName()).startsWith("n");
@@ -133,11 +105,7 @@ public class SimpleQueryTest extends TestBase {
         prepareUser("n1");
         prepareUser("n2");
 
-        User user = new UserDao() {
-            public User query() {
-                return with(field("name").eq("n1")).querySingle();
-            }
-        }.query();
+        User user = new UserDao().with(field("name").eq("n1")).querySingle();
 
         assertThat(user).isNotNull();
         assertThat(user.getName()).isEqualTo("n1");
@@ -148,10 +116,6 @@ public class SimpleQueryTest extends TestBase {
         prepareUser("n1");
         prepareUser("n2");
 
-        new UserDao() {
-            public User query() {
-                return with(field("name").like("n")).querySingle();
-            }
-        }.query();
+        new UserDao().with(field("name").like("n")).querySingle();
     }
 }
