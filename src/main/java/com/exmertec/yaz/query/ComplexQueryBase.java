@@ -55,9 +55,9 @@ public abstract class ComplexQueryBase<T> implements Query {
 
     @Override
     public String toString() {
-        return "ComplexRestrictionGeneratorBase{" +
-            "field='" + field + '\'' +
-            ", values=" + values +
-            '}';
+        return "ComplexRestrictionGeneratorBase{"
+            + "field='" + field + '\''
+            + ", values=" + values
+            + '}';
     }
 }

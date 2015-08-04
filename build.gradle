@@ -2,6 +2,8 @@ apply plugin: 'idea'
 apply plugin: 'maven'
 apply plugin: 'java'
 apply plugin: 'signing'
+apply plugin: 'checkstyle'
+apply plugin: 'findbugs'
 
 version = '0.01'
 group = 'com.exmertec.yaz'
@@ -130,6 +132,22 @@ dependencies {
             //Hibernate
             [group: 'org.hibernate.javax.persistence', name: 'hibernate-jpa-2.1-api', version: '1.0.0.Final'],
     )
+}
+
+tasks.withType(FindBugs) {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
+findbugs {
+    excludeFilter = new File(project(":").projectDir, "config/findbugs/excludeBugsFilter.xml")
+}
+
+checkstyle {
+    toolVersion = "6.7"
+    configFile = new File(project(":").projectDir, "config/checkstyle/checkstyle.xml")
 }
 
 task wrapper(type: Wrapper) {

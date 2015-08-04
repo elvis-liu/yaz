@@ -15,8 +15,10 @@ public class NinQuery extends ComplexQueryBase<Object> {
     }
 
     @Override
-    protected List<Predicate> doGenerate(CriteriaBuilder criteriaBuilder, Root<?> entity, String field, Iterable<Expression<Object>> expressions) {
-        Expression[] expressionArray = StreamSupport.stream(expressions.spliterator(), false).toArray(Expression[]::new);
+    protected List<Predicate> doGenerate(CriteriaBuilder criteriaBuilder, Root<?> entity, String field,
+                                         Iterable<Expression<Object>> expressions) {
+        Expression[] expressionArray = StreamSupport.stream(expressions.spliterator(), false).toArray(
+            Expression[]::new);
         return Arrays.asList(criteriaBuilder.not(entity.get(field).in(expressionArray)));
     }
 }
