@@ -2,29 +2,13 @@ package com.exmertec.yaz.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.exmertec.yaz.BaseDao;
 import com.exmertec.yaz.model.User;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/test-context.xml"})
-@TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
-@Transactional
-public class SimpleQueryTest {
-    @PersistenceContext
-    protected EntityManager entityManager;
-
+public class SimpleQueryTest extends TestBase {
     @Test
     public void should_query_by_id() throws Exception {
         String userName = "name";
@@ -169,21 +153,5 @@ public class SimpleQueryTest {
                 return with(field("name").like("n")).querySingle();
             }
         }.query();
-    }
-
-    private Long prepareUser(String name) {
-        UserDao userDao = new UserDao();
-
-        User user = new User();
-        user.setName(name);
-        userDao.save(user);
-
-        return user.getId();
-    }
-
-    private class UserDao extends BaseDao<User> {
-        public UserDao() {
-            super(SimpleQueryTest.this.entityManager, User.class);
-        }
     }
 }
