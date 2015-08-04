@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toList;
 
 import com.exmertec.yaz.core.AdvancedCommandBuilder;
 import com.exmertec.yaz.core.Query;
+
 import org.apache.log4j.Logger;
 
 import java.util.Arrays;

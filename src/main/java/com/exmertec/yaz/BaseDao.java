@@ -7,6 +7,7 @@ import com.exmertec.yaz.core.AdvancedCommandBuilder;
 import com.exmertec.yaz.core.BasicCommandBuilder;
 import com.exmertec.yaz.core.Query;
 import com.exmertec.yaz.core.QueryBuilder;
+
 import org.apache.log4j.Logger;
 
 import javax.persistence.EntityManager;
