@@ -22,17 +22,6 @@ public class SimpleActionTest extends TestBase {
     }
 
     @Test
-    public void should_distinct_count() throws Exception {
-        prepareUser("a");
-        prepareUser("a");
-        prepareUser("b");
-
-        Long count = new UserDao().where().distinctCount("name");
-
-        assertThat(count).isEqualTo(2);
-    }
-
-    @Test
     public void should_query_page_with_index_and_size() throws Exception {
         prepareUser("n1");
         prepareUser("n2");

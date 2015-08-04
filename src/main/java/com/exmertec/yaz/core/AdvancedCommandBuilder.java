@@ -16,8 +16,6 @@ public interface AdvancedCommandBuilder<T> extends BasicCommandBuilder<T> {
     // actions
     Long count();
 
-    Long distinctCount(String fieldName);
-
     T queryFirst();
 
     List<T> queryPage(int pageSize, int pageIndex);
@@ -27,5 +25,5 @@ public interface AdvancedCommandBuilder<T> extends BasicCommandBuilder<T> {
     // queries
     AdvancedCommandBuilder<T> where(Query... queries);
 
-    SelectionBuilder select();
+    SelectionBuilder select(String fieldName);
 }

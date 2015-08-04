@@ -59,12 +59,6 @@ public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T>, Criteri
     }
 
     @Override
-    public Long distinctCount(String fieldName) {
-        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
-        return doQuerySingleForType(Long.class, root -> criteriaBuilder.countDistinct(root.get(fieldName)));
-    }
-
-    @Override
     public T queryFirst() {
         List<T> resultList = doQueryList(query -> query.setMaxResults(1));
 
@@ -121,8 +115,8 @@ public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T>, Criteri
     }
 
     @Override
-    public SelectionBuilder select() {
-        return new CoreSelectionBuilder(this);
+    public SelectionBuilder select(String fieldName) {
+        return new CoreSelectionBuilder<>(this, fieldName);
     }
 
     @Override

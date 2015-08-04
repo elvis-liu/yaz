@@ -7,13 +7,13 @@ import org.junit.Test;
 
 public class SelectActionTest extends TestBase {
     @Test
-    public void should_count() throws Exception {
+    public void should_distinct_count() throws Exception {
         prepareUser("a");
         prepareUser("a");
         prepareUser("b");
 
-        Long count = new UserDao().where(field("name").like("a")).select().count("name");
+        Long count = new UserDao().where(field("name").like("a")).select("name").distinctCount();
 
-        assertThat(count).isEqualTo(2);
+        assertThat(count).isEqualTo(1);
     }
 }
