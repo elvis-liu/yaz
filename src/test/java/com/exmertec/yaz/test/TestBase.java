@@ -1,6 +1,7 @@
 package com.exmertec.yaz.test;
 
 import com.exmertec.yaz.BaseDao;
+import com.exmertec.yaz.model.Order;
 import com.exmertec.yaz.model.User;
 import com.exmertec.yaz.model.UserType;
 
@@ -29,14 +30,45 @@ public abstract class TestBase {
         return new UserBuilder();
     }
 
+    protected OrderBuilder builderOrder() {
+        return new OrderBuilder();
+    }
+
     protected class UserDao extends BaseDao<User> {
         public UserDao() {
             super(TestBase.this.entityManager, User.class);
         }
     }
 
+    protected class OrderDao extends BaseDao<Order> {
+        public OrderDao() {
+            super(TestBase.this.entityManager, Order.class);
+        }
+    }
+
+    protected class OrderBuilder {
+        private Order order = new Order();
+
+        public OrderBuilder userId(Long userId) {
+            order.setUserId(userId);
+            return this;
+        }
+
+        public OrderBuilder amount(Double amount) {
+            order.setAmount(amount);
+            return this;
+        }
+
+        public Long save() {
+            OrderDao orderDao = new OrderDao();
+            orderDao.save(order);
+
+            return order.getId();
+        }
+    }
+
     protected class UserBuilder {
-        User user = new User();
+        private User user = new User();
 
         public UserBuilder name(String name) {
             user.setName(name);

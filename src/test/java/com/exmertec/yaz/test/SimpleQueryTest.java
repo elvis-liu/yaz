@@ -3,8 +3,10 @@ package com.exmertec.yaz.test;
 import static com.exmertec.yaz.BaseDao.and;
 import static com.exmertec.yaz.BaseDao.field;
 import static com.exmertec.yaz.BaseDao.or;
+import static com.exmertec.yaz.BaseDao.subquery;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.exmertec.yaz.model.Order;
 import com.exmertec.yaz.model.User;
 
 import org.junit.Test;
@@ -122,6 +124,19 @@ public class SimpleQueryTest extends TestBase {
             field("name").eq("a").when(false), // ignore query
             field("name").eq("b").when(true) // effective query
         ).queryList();
+
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.get(0).getName()).isEqualTo("b");
+    }
+
+    @Test
+    public void should_query_with_sub_query() throws Exception {
+        buildUser().name("a").save();
+        Long userId = buildUser().name("b").save();
+
+        builderOrder().userId(userId).save();
+
+        List<User> result = new UserDao().where(field("id").in(subquery(Order.class, "userId"))).queryList();
 
         assertThat(result.size()).isEqualTo(1);
         assertThat(result.get(0).getName()).isEqualTo("b");
