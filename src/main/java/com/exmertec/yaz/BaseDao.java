@@ -17,14 +17,21 @@ import javax.persistence.EntityManager;
 public abstract class BaseDao<T> {
     private static final Logger LOG = Logger.getLogger(BaseDao.class);
 
-    protected final EntityManager entityManager;
+    protected EntityManager entityManager;
 
     private final Class<T> prototype;
 
-    public BaseDao(EntityManager entityManager, Class<T> prototype) {
-        this.entityManager = entityManager;
+    protected BaseDao(EntityManager entityManager, Class<T> prototype) {
         this.prototype = prototype;
+        setEntityManager(entityManager);
+    }
 
+    protected BaseDao(Class<T> prototype) {
+        this.prototype = prototype;
+    }
+
+    protected void setEntityManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
         ThreadLocalEntityManagerHelper.setEntityManager(entityManager);
     }
 
