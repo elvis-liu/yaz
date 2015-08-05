@@ -10,22 +10,23 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 public class NumberCompareQuery<T extends Number> extends ComplexQueryBase<T> {
-    private ExpressionEvaluator expressionEvaluator;
+    private ExpressionEvaluator evaluator;
 
-    public NumberCompareQuery(String fieldName, T number, ExpressionEvaluator expressionEvaluator) {
+    public NumberCompareQuery(String fieldName, T number, ExpressionEvaluator evaluator) {
         super(fieldName, number);
-        this.expressionEvaluator = expressionEvaluator;
+        this.evaluator = evaluator;
     }
 
     @Override
     protected List<Predicate> doGenerate(CriteriaBuilder criteriaBuilder, Root<?> entity, String field,
                                          Iterable<Expression<T>> expressions) {
         Expression<T> expression = expressions.iterator().next();
-        return Arrays.asList(expressionEvaluator.evaluate(entity.<T>get(field), expression));
+        return Arrays.asList(evaluator.evaluate(criteriaBuilder, entity.<T>get(field), expression));
     }
 
     @FunctionalInterface
     public interface ExpressionEvaluator {
-        Predicate evaluate(Path<? extends Number> path, Expression<? extends Number> expression);
+        Predicate evaluate(CriteriaBuilder criteriaBuilder,
+                           Path<? extends Number> path, Expression<? extends Number> expression);
     }
 }

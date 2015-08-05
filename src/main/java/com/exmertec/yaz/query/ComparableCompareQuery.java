@@ -10,22 +10,23 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 public class ComparableCompareQuery<T extends Comparable<? super T>> extends ComplexQueryBase<T> {
-    private ExpressionEvaluator expressionEvaluator;
+    private ExpressionEvaluator evaluator;
 
-    public ComparableCompareQuery(String fieldName, T comparable, ExpressionEvaluator expressionEvaluator) {
+    public ComparableCompareQuery(String fieldName, T comparable, ExpressionEvaluator evaluator) {
         super(fieldName, comparable);
-        this.expressionEvaluator = expressionEvaluator;
+        this.evaluator = evaluator;
     }
 
     @Override
     protected List<Predicate> doGenerate(CriteriaBuilder criteriaBuilder, Root<?> entity, String field,
                                          Iterable<Expression<T>> expressions) {
         Expression<T> expression = expressions.iterator().next();
-        return Arrays.asList(expressionEvaluator.evaluate(entity.<T>get(field), expression));
+        return Arrays.asList(evaluator.evaluate(criteriaBuilder, entity.<T>get(field), expression));
     }
 
     @FunctionalInterface
     public interface ExpressionEvaluator {
-        <T extends Comparable<? super T>> Predicate evaluate(Path<T> path, Expression<T> expression);
+        <T extends Comparable<? super T>> Predicate evaluate(CriteriaBuilder criteriaBuilder,
+                                                             Path<T> path, Expression<T> expression);
     }
 }

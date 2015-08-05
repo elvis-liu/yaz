@@ -2,7 +2,6 @@ package com.exmertec.yaz.builder;
 
 import com.exmertec.yaz.core.Query;
 import com.exmertec.yaz.core.QueryBuilder;
-import com.exmertec.yaz.core.ThreadLocalEntityManagerHelper;
 import com.exmertec.yaz.query.ComparableBetweenQuery;
 import com.exmertec.yaz.query.ComparableCompareQuery;
 import com.exmertec.yaz.query.EmptyQuery;
@@ -14,15 +13,13 @@ import com.exmertec.yaz.query.NinQuery;
 import com.exmertec.yaz.query.NotEqualQuery;
 import com.exmertec.yaz.query.NumberCompareQuery;
 
-import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
 
 public class FieldQueryBuilder implements QueryBuilder {
-    private final EntityManager entityManager;
     private final String fieldName;
 
     public FieldQueryBuilder(String fieldName) {
         this.fieldName = fieldName;
-        this.entityManager = ThreadLocalEntityManagerHelper.getEntityManager();
     }
 
     @Override
@@ -66,41 +63,41 @@ public class FieldQueryBuilder implements QueryBuilder {
 
     @Override
     public <T extends Comparable<? super T>> Query gt(T value) {
-        return new ComparableCompareQuery<>(fieldName, value, entityManager.getCriteriaBuilder()::greaterThan);
+        return new ComparableCompareQuery<>(fieldName, value, CriteriaBuilder::greaterThan);
     }
 
     @Override
     public <T extends Number> Query gt(T number) {
-        return new NumberCompareQuery<>(fieldName, number, entityManager.getCriteriaBuilder()::gt);
+        return new NumberCompareQuery<>(fieldName, number, CriteriaBuilder::gt);
     }
 
     @Override
     public <T extends Comparable<? super T>> Query lt(T value) {
-        return new ComparableCompareQuery<>(fieldName, value, entityManager.getCriteriaBuilder()::lessThan);
+        return new ComparableCompareQuery<>(fieldName, value, CriteriaBuilder::lessThan);
     }
 
     @Override
     public <T extends Number> Query lt(T number) {
-        return new NumberCompareQuery<>(fieldName, number, entityManager.getCriteriaBuilder()::lt);
+        return new NumberCompareQuery<>(fieldName, number, CriteriaBuilder::lt);
     }
 
     @Override
     public <T extends Comparable<? super T>> Query gte(T value) {
-        return new ComparableCompareQuery<>(fieldName, value, entityManager.getCriteriaBuilder()::greaterThanOrEqualTo);
+        return new ComparableCompareQuery<>(fieldName, value, CriteriaBuilder::greaterThanOrEqualTo);
     }
 
     @Override
     public <T extends Number> Query gte(T number) {
-        return new NumberCompareQuery<>(fieldName, number, entityManager.getCriteriaBuilder()::ge);
+        return new NumberCompareQuery<>(fieldName, number, CriteriaBuilder::ge);
     }
 
     @Override
     public <T extends Comparable<? super T>> Query lte(T value) {
-        return new ComparableCompareQuery<>(fieldName, value, entityManager.getCriteriaBuilder()::lessThanOrEqualTo);
+        return new ComparableCompareQuery<>(fieldName, value, CriteriaBuilder::lessThanOrEqualTo);
     }
 
     @Override
     public <T extends Number> Query lte(T number) {
-        return new NumberCompareQuery<>(fieldName, number, entityManager.getCriteriaBuilder()::le);
+        return new NumberCompareQuery<>(fieldName, number, CriteriaBuilder::le);
     }
 }

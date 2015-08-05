@@ -3,7 +3,6 @@ package com.exmertec.yaz.builder;
 import static java.util.stream.Collectors.toList;
 
 import com.exmertec.yaz.core.Query;
-import com.exmertec.yaz.core.ThreadLocalEntityManagerHelper;
 
 import java.util.Collection;
 import java.util.List;
@@ -31,6 +30,8 @@ interface CriteriaQueryGenerator<T> {
     List<OrderByRule> getOrderByRules();
 
     List<Query> getQueries();
+
+    EntityManager getEntityManager();
 
     default Root<T> getRoot(CriteriaQuery<?> criteriaQuery) {
         Set<Root<?>> roots = criteriaQuery.getRoots();
@@ -70,10 +71,6 @@ interface CriteriaQueryGenerator<T> {
                                  .map(rule -> rule.getOrder(criteriaBuilder, entity))
                                  .collect(toList()));
         }
-    }
-
-    default EntityManager getEntityManager() {
-        return ThreadLocalEntityManagerHelper.getEntityManager();
     }
 
     default <R> R doQuerySingleForType(Class<R> resultType, Function<Root<T>, Selection<R>> selectionFunction) {

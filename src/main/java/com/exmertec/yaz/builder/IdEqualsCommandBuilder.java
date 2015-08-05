@@ -1,7 +1,6 @@
 package com.exmertec.yaz.builder;
 
 import com.exmertec.yaz.core.BasicCommandBuilder;
-import com.exmertec.yaz.core.ThreadLocalEntityManagerHelper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
@@ -12,10 +11,10 @@ public final class IdEqualsCommandBuilder<T> implements BasicCommandBuilder {
     private Object id;
     private LockModeType lockModeType;
 
-    public IdEqualsCommandBuilder(Class<T> protoType, Object id) {
+    public IdEqualsCommandBuilder(EntityManager entityManager, Class<T> protoType, Object id) {
+        this.entityManager = entityManager;
         this.protoType = protoType;
         this.id = id;
-        this.entityManager = ThreadLocalEntityManagerHelper.getEntityManager();
     }
 
     @Override

@@ -7,7 +7,6 @@ import com.exmertec.yaz.core.AdvancedCommandBuilder;
 import com.exmertec.yaz.core.BasicCommandBuilder;
 import com.exmertec.yaz.core.Query;
 import com.exmertec.yaz.core.QueryBuilder;
-import com.exmertec.yaz.core.ThreadLocalEntityManagerHelper;
 import com.exmertec.yaz.expression.ExpressionGenerator;
 import com.exmertec.yaz.expression.SubqueryExpressionGenerator;
 import com.exmertec.yaz.query.BooleanQuery;
@@ -15,6 +14,7 @@ import com.exmertec.yaz.query.BooleanQuery;
 import org.apache.log4j.Logger;
 
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
 
 public abstract class BaseDao<T> {
     private static final Logger LOG = Logger.getLogger(BaseDao.class);
@@ -34,7 +34,6 @@ public abstract class BaseDao<T> {
 
     protected void setEntityManager(EntityManager entityManager) {
         this.entityManager = entityManager;
-        ThreadLocalEntityManagerHelper.setEntityManager(entityManager);
     }
 
     public void save(T entity) {
@@ -50,11 +49,11 @@ public abstract class BaseDao<T> {
     }
 
     public BasicCommandBuilder<T> idEquals(Object id) {
-        return new IdEqualsCommandBuilder<>(prototype, id);
+        return new IdEqualsCommandBuilder<>(entityManager, prototype, id);
     }
 
     public AdvancedCommandBuilder<T> where(Query... queries) {
-        return new CoreCommandBuilder<>(prototype).where(queries);
+        return new CoreCommandBuilder<>(entityManager, prototype).where(queries);
     }
 
     public static QueryBuilder field(String fieldName) {
@@ -66,10 +65,10 @@ public abstract class BaseDao<T> {
     }
 
     public static Query and(Query... queries) {
-        return new BooleanQuery(ThreadLocalEntityManagerHelper.getCriteriaBuilder()::and, queries);
+        return new BooleanQuery(CriteriaBuilder::and, queries);
     }
 
     public static Query or(Query... queries) {
-        return new BooleanQuery(ThreadLocalEntityManagerHelper.getCriteriaBuilder()::or, queries);
+        return new BooleanQuery(CriteriaBuilder::or, queries);
     }
 }

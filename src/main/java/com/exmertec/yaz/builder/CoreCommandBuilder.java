@@ -12,12 +12,14 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.criteria.CriteriaBuilder;
 
 public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T>, CriteriaQueryGenerator<T> {
     private static final Logger LOG = Logger.getLogger(CoreCommandBuilder.class);
 
+    private final EntityManager entityManager;
     private final Class<T> prototype;
 
     private final List<Query> addedQueries = new LinkedList<>();
@@ -26,7 +28,8 @@ public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T>, Criteri
 
     private List<OrderByRule> orderByRules = new LinkedList<>();
 
-    public CoreCommandBuilder(Class<T> prototype) {
+    public CoreCommandBuilder(EntityManager entityManager, Class<T> prototype) {
+        this.entityManager = entityManager;
         this.prototype = prototype;
     }
 
@@ -137,5 +140,10 @@ public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T>, Criteri
     @Override
     public List<Query> getQueries() {
         return addedQueries;
+    }
+
+    @Override
+    public EntityManager getEntityManager() {
+        return entityManager;
     }
 }

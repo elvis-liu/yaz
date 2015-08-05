@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 
 import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -14,9 +13,9 @@ import javax.persistence.criteria.Predicate;
 
 public class BooleanQuery implements Query {
     private final List<Query> queries;
-    private Function<Predicate[], Predicate> booleanOperator;
+    private BooleanOperator booleanOperator;
 
-    public BooleanQuery(Function<Predicate[], Predicate> booleanOperator, Query... queries) {
+    public BooleanQuery(BooleanOperator booleanOperator, Query... queries) {
         this.booleanOperator = booleanOperator;
         this.queries = Arrays.asList(queries);
     }
@@ -28,6 +27,11 @@ public class BooleanQuery implements Query {
             .flatMap(Collection::stream)
             .toArray(Predicate[]::new);
 
-        return Arrays.asList(booleanOperator.apply(predicates));
+        return Arrays.asList(booleanOperator.operate(criteriaBuilder, predicates));
+    }
+
+    @FunctionalInterface
+    public interface BooleanOperator {
+        Predicate operate(CriteriaBuilder criteriaBuilder, Predicate[] predicates);
     }
 }
