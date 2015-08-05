@@ -12,7 +12,7 @@ Maven dependency:
 <dependency>
     <groupId>com.exmertec.yaz</groupId>
     <artifactId>yaz</artifactId>
-    <version>0.03</version>
+    <version>0.04</version>
     <type>jar</type>
     <scope>compile</scope>
 </dependency>
