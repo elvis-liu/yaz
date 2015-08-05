@@ -112,4 +112,18 @@ public class SimpleQueryTest extends TestBase {
         assertThat(result.get(0).getName()).isEqualTo("aaa");
         assertThat(result.get(1).getName()).isEqualTo("abc");
     }
+
+    @Test
+    public void should_allow_conditional_query() throws Exception {
+        prepareUser("a");
+        prepareUser("b");
+
+        List<User> result = new UserDao().where(
+            field("name").eq("a").when(false), // ignore query
+            field("name").eq("b").when(true) // effective query
+        ).queryList();
+
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.get(0).getName()).isEqualTo("b");
+    }
 }
