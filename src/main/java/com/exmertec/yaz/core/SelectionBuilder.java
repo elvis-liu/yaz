@@ -1,5 +1,7 @@
 package com.exmertec.yaz.core;
 
+import java.util.List;
+
 public interface SelectionBuilder {
     Long distinctCount();
 
@@ -10,4 +12,12 @@ public interface SelectionBuilder {
     <T extends Number> T max(Class<T> targetType);
 
     <T extends Number> T sum(Class<T> targetType);
+
+    <T> T querySingle(Class<T> targetType);
+
+    <T> T queryFirst(Class<T> targetType);
+
+    <T> List<T> queryList(Class<T> targetType);
+
+    <T> List<T> queryPage(Class<T> targetType, int pageSize, int pageIndex);
 }

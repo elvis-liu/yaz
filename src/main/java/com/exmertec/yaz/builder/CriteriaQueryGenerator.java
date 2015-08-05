@@ -48,13 +48,6 @@ interface CriteriaQueryGenerator<T> {
         return criteriaQuery;
     }
 
-    default CriteriaQuery<T> createQueryForProtoType() {
-        CriteriaQuery<T> criteriaQuery = createQuery(getProtoType());
-        criteriaQuery.select(getRoot(criteriaQuery));
-
-        return criteriaQuery;
-    }
-
     default Predicate[] generateRestrictions(AbstractQuery<?> abstractQuery, List<Query> queries) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         return queries.stream()
@@ -69,7 +62,7 @@ interface CriteriaQueryGenerator<T> {
         }
     }
 
-    default void appendOrderBy(CriteriaBuilder criteriaBuilder, CriteriaQuery<T> criteria) {
+    default void appendOrderBy(CriteriaBuilder criteriaBuilder, CriteriaQuery<?> criteria) {
         final Root<?> entity = criteria.getRoots().iterator().next();
 
         if (!getOrderByRules().isEmpty()) {
@@ -97,8 +90,30 @@ interface CriteriaQueryGenerator<T> {
         return query.getSingleResult();
     }
 
+    default <R> List<R> doQueryListWithSelect(String fieldName, Class<R> resultType,
+                                              Consumer<TypedQuery<R>> queryManipulator) {
+        CriteriaQuery<R> criteriaQuery = createQuery(resultType);
+        criteriaQuery.select(getRoot(criteriaQuery).get(fieldName));
+
+        appendOrderBy(getEntityManager().getCriteriaBuilder(), criteriaQuery);
+
+        Predicate[] generatedRestrictions = generateRestrictions(criteriaQuery, getQueries());
+
+        criteriaQuery.where(generatedRestrictions);
+
+        TypedQuery<R> query = getEntityManager().createQuery(criteriaQuery);
+        if (queryManipulator != null) {
+            queryManipulator.accept(query);
+        }
+        addQueryOptions(query);
+
+        return query.getResultList();
+    }
+
     default List<T> doQueryList(Consumer<TypedQuery<T>> queryManipulator) {
-        CriteriaQuery<T> criteriaQuery = createQueryForProtoType();
+        CriteriaQuery<T> criteriaQuery = createQuery(getProtoType());
+        criteriaQuery.select(getRoot(criteriaQuery));
+
         appendOrderBy(getEntityManager().getCriteriaBuilder(), criteriaQuery);
 
         Predicate[] generatedRestrictions = generateRestrictions(criteriaQuery, getQueries());

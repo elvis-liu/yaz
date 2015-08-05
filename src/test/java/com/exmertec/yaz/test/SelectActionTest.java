@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 
+import java.util.List;
+
 public class SelectActionTest extends TestBase {
     @Test
     public void should_distinct_count() throws Exception {
@@ -58,5 +60,51 @@ public class SelectActionTest extends TestBase {
         Integer sum = new UserDao().where(field("points").ne(null)).select("points").sum(Integer.class);
 
         assertThat(sum).isEqualTo(10);
+    }
+
+    @Test
+    public void should_query_single_with_select() throws Exception {
+        buildUser().name("abc").save();
+
+        String name = new UserDao().where(field("name").eq("abc")).select("name").querySingle(String.class);
+
+        assertThat(name).isEqualTo("abc");
+    }
+
+    @Test
+    public void should_query_list_with_select() throws Exception {
+        buildUser().name("c").save();
+        buildUser().name("a").save();
+        buildUser().name("b").save();
+
+        List<String> names = new UserDao().where().ascendingBy("name").select("name").queryList(String.class);
+
+        assertThat(names.size()).isEqualTo(3);
+        assertThat(names.get(0)).isEqualTo("a");
+        assertThat(names.get(1)).isEqualTo("b");
+        assertThat(names.get(2)).isEqualTo("c");
+    }
+
+    @Test
+    public void should_query_page_with_select() throws Exception {
+        buildUser().name("c").save();
+        buildUser().name("a").save();
+        buildUser().name("b").save();
+
+        List<String> names = new UserDao().where().ascendingBy("name").select("name").queryPage(String.class, 2, 1);
+
+        assertThat(names.size()).isEqualTo(1);
+        assertThat(names.get(0)).isEqualTo("c");
+    }
+
+    @Test
+    public void should_query_first_with_select() throws Exception {
+        buildUser().name("c").save();
+        buildUser().name("a").save();
+        buildUser().name("b").save();
+
+        String name = new UserDao().where().ascendingBy("name").select("name").queryFirst(String.class);
+
+        assertThat(name).isEqualTo("a");
     }
 }
