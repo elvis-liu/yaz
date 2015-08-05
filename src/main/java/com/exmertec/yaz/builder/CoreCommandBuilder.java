@@ -9,6 +9,7 @@ import com.exmertec.yaz.core.SelectionBuilder;
 import org.apache.log4j.Logger;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -114,6 +115,12 @@ public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T>, Criteri
     @Override
     public AdvancedCommandBuilder<T> where(Query... queries) {
         addedQueries.addAll(Arrays.asList(queries));
+        return this;
+    }
+
+    @Override
+    public AdvancedCommandBuilder<T> where(Collection<Query> queries) {
+        addedQueries.addAll(queries);
         return this;
     }
 
