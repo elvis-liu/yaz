@@ -75,6 +75,11 @@ uploadArchives {
                         name 'Yufeng Liu'
                         email 'elvisliu.cs@gmail.com'
                     }
+                    developer {
+                        id 'yeyuexia'
+                        name 'Zhuo Liu'
+                        email 'yyxworld@gmail.com'
+                    }
                 }
             }
         }

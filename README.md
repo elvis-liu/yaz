@@ -23,7 +23,12 @@ To use it just:
 ```java
 public class UserDao extends BaseDao<User> {
     public UserDao() {
-        super(entityManager, User.class);
+        super(User.class);
+    }
+    
+    @PersistenceContext
+    public void injectEntityManager(EntityManager entityManager) {
+        super.setEntityManager(entityManager);
     }
     
     public List<User> findUserByName(String key) {
@@ -31,3 +36,5 @@ public class UserDao extends BaseDao<User> {
     }
 }
 ```
+
+Please refer to the test source code, which shows how to use different query methods provided by YAZ.
