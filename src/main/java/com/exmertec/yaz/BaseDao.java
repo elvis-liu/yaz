@@ -13,6 +13,8 @@ import com.exmertec.yaz.query.BooleanQuery;
 
 import org.apache.log4j.Logger;
 
+import java.util.Collection;
+
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 
@@ -54,6 +56,10 @@ public abstract class BaseDao<T> {
 
     public AdvancedCommandBuilder<T> where(Query... queries) {
         return new CoreCommandBuilder<>(entityManager, prototype).where(queries);
+    }
+
+    public AdvancedCommandBuilder<T> where(Collection<Query> queries) {
+        return new CoreCommandBuilder<>(entityManager, prototype).where(queries.stream().toArray(Query[]::new));
     }
 
     public static QueryBuilder field(String fieldName) {

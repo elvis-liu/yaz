@@ -1,6 +1,5 @@
 package com.exmertec.yaz.core;
 
-import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.LockModeType;
@@ -25,8 +24,6 @@ public interface AdvancedCommandBuilder<T> extends BasicCommandBuilder<T> {
 
     // queries
     AdvancedCommandBuilder<T> where(Query... queries);
-
-    AdvancedCommandBuilder<T> where(Collection<Query> queries);
 
     SelectionBuilder select(String fieldName);
 }
