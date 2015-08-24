@@ -9,6 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.exmertec.yaz.model.Order;
 import com.exmertec.yaz.model.User;
 
+import org.assertj.core.util.Lists;
 import org.junit.Test;
 
 import java.util.List;
@@ -58,10 +59,30 @@ public class SimpleQueryTest extends TestBase {
     }
 
     @Test
+    public void should_query_when_in_list_conditions() throws Exception {
+        prepareUser("name1");
+        prepareUser("name2");
+
+        List<User> result = new UserDao().where(field("name").in(Lists.newArrayList("name1"))).queryList();
+
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.get(0).getName()).isEqualTo("name1");
+    }
+
+    @Test
     public void should_query_when_in_empty_conditions() throws Exception {
         prepareUser("name");
 
         List<User> result = new UserDao().where(field("name").in()).queryList();
+
+        assertThat(result.size()).isEqualTo(0);
+    }
+
+    @Test
+    public void should_query_when_in_empty_list_conditions() throws Exception {
+        prepareUser("name");
+
+        List<User> result = new UserDao().where(field("name").in(Lists.emptyList())).queryList();
 
         assertThat(result.size()).isEqualTo(0);
     }
