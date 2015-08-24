@@ -1,5 +1,8 @@
 package com.exmertec.yaz.core;
 
+import java.util.Collection;
+import java.util.Objects;
+
 public interface QueryBuilder {
     Query eq(Object value);
 
@@ -9,7 +12,11 @@ public interface QueryBuilder {
 
     Query in(Object... values);
 
+    Query in(Collection<Objects> values);
+
     Query nin(Object... values);
+
+    Query nin(Collection<Objects> values);
 
     <T extends Comparable<? super T>> Query between(T value1, T value2);
 

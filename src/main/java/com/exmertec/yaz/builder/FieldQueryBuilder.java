@@ -13,6 +13,10 @@ import com.exmertec.yaz.query.NinQuery;
 import com.exmertec.yaz.query.NotEqualQuery;
 import com.exmertec.yaz.query.NumberCompareQuery;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+
 import javax.persistence.criteria.CriteriaBuilder;
 
 public class FieldQueryBuilder implements QueryBuilder {
@@ -48,12 +52,22 @@ public class FieldQueryBuilder implements QueryBuilder {
     }
 
     @Override
+    public Query in(Collection<Objects> values) {
+        return in(values == null ? null : values.toArray());
+    }
+
+    @Override
     public Query nin(Object... values) {
         if (values == null || values.length == 0) {
             return new EmptyQuery();
         }
 
         return new NinQuery(fieldName, values);
+    }
+
+    @Override
+    public Query nin(Collection<Objects> values) {
+        return nin(values == null ? null : values.toArray());
     }
 
     @Override
