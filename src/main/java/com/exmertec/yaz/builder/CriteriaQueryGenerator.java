@@ -88,9 +88,9 @@ interface CriteriaQueryGenerator<T> {
     }
 
     default <R> List<R> doQueryListWithSelect(String fieldName, Class<R> resultType,
-                                              Consumer<TypedQuery<R>> queryManipulator) {
+                                              Consumer<TypedQuery<R>> queryManipulator, boolean isDistinct) {
         CriteriaQuery<R> criteriaQuery = createQuery(resultType);
-        criteriaQuery.select(getRoot(criteriaQuery).get(fieldName));
+        criteriaQuery.select(getRoot(criteriaQuery).get(fieldName)).distinct(isDistinct);
 
         appendOrderBy(getEntityManager().getCriteriaBuilder(), criteriaQuery);
 

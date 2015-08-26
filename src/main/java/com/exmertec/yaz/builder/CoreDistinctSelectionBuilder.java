@@ -1,6 +1,6 @@
 package com.exmertec.yaz.builder;
 
-import com.exmertec.yaz.core.SelectionBuilder;
+import com.exmertec.yaz.core.DistinctSelectionBuilder;
 
 import org.apache.log4j.Logger;
 
@@ -8,56 +8,29 @@ import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
 
-public class CoreSelectionBuilder<T> implements SelectionBuilder {
-    private static final Logger LOG = Logger.getLogger(CoreSelectionBuilder.class);
+public class CoreDistinctSelectionBuilder<T> implements DistinctSelectionBuilder {
+    private static final Logger LOG = Logger.getLogger(CoreDistinctSelectionBuilder.class);
 
     private final CriteriaQueryGenerator<T> criteriaQueryGenerator;
     private final String fieldName;
 
-    public CoreSelectionBuilder(CriteriaQueryGenerator<T> criteriaQueryGenerator, String fieldName) {
+    public CoreDistinctSelectionBuilder(CriteriaQueryGenerator<T> criteriaQueryGenerator, String fieldName) {
         this.criteriaQueryGenerator = criteriaQueryGenerator;
         this.fieldName = fieldName;
     }
 
     @Override
-    public Long distinctCount() {
+    public Long count() {
         return criteriaQueryGenerator.doQuerySingleForType(Long.class,
                                                            root -> getCriteriaBuilder().countDistinct(
                                                                root.get(fieldName)));
     }
 
-    @Override
-    public Double avg() {
-        return criteriaQueryGenerator.doQuerySingleForType(Double.class,
-                                                           root -> getCriteriaBuilder().avg(
-                                                               root.get(fieldName)));
-    }
-
-    @Override
-    public <T extends Number> T min(Class<T> targetType) {
-        return criteriaQueryGenerator.doQuerySingleForType(targetType,
-                                                           root -> getCriteriaBuilder().min(
-                                                               root.get(fieldName)));
-    }
-
-    @Override
-    public <T extends Number> T max(Class<T> targetType) {
-        return criteriaQueryGenerator.doQuerySingleForType(targetType,
-                                                           root -> getCriteriaBuilder().max(
-                                                               root.get(fieldName)));
-    }
-
-    @Override
-    public <T extends Number> T sum(Class<T> targetType) {
-        return criteriaQueryGenerator.doQuerySingleForType(targetType,
-                                                           root -> getCriteriaBuilder().sum(
-                                                               root.get(fieldName)));
-    }
 
     @Override
     public <T> T querySingle(Class<T> targetType) {
         List<T> resultList = criteriaQueryGenerator.doQueryListWithSelect(fieldName, targetType,
-                                                                          query -> query.setMaxResults(2), false);
+                                                                          query -> query.setMaxResults(2), true);
 
         if (resultList.isEmpty()) {
             LOG.info(String.format("Failed to select single result of %s from %s",
@@ -76,7 +49,7 @@ public class CoreSelectionBuilder<T> implements SelectionBuilder {
     @Override
     public <T> T queryFirst(Class<T> targetType) {
         List<T> resultList = criteriaQueryGenerator.doQueryListWithSelect(fieldName, targetType,
-                                                                          query -> query.setMaxResults(1), false);
+                                                                          query -> query.setMaxResults(1), true);
 
         if (resultList.isEmpty()) {
             LOG.info("Failed to get first result of " + criteriaQueryGenerator.getProtoType().getName());
@@ -88,7 +61,7 @@ public class CoreSelectionBuilder<T> implements SelectionBuilder {
 
     @Override
     public <T> List<T> queryList(Class<T> targetType) {
-        List<T> resultList = criteriaQueryGenerator.doQueryListWithSelect(fieldName, targetType, null, false);
+        List<T> resultList = criteriaQueryGenerator.doQueryListWithSelect(fieldName, targetType, null, true);
 
         if (resultList.isEmpty()) {
             LOG.info("Failed to find any result of " + criteriaQueryGenerator.getProtoType().getName());
@@ -102,7 +75,7 @@ public class CoreSelectionBuilder<T> implements SelectionBuilder {
         List<T> resultList = criteriaQueryGenerator.doQueryListWithSelect(fieldName, targetType,
                                                                           query -> query.setMaxResults(pageSize)
                                                                               .setFirstResult(pageIndex * pageSize),
-                                                                          false);
+                                                                          true);
 
         if (resultList.isEmpty()) {
             LOG.info(String.format("Failed to find entity of %s, of page (%d, %d)",
