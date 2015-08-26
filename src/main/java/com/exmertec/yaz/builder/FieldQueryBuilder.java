@@ -14,8 +14,6 @@ import com.exmertec.yaz.query.NotEqualQuery;
 import com.exmertec.yaz.query.NumberCompareQuery;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
 
 import javax.persistence.criteria.CriteriaBuilder;
 
@@ -52,7 +50,7 @@ public class FieldQueryBuilder implements QueryBuilder {
     }
 
     @Override
-    public Query in(Collection<Objects> values) {
+    public Query in(Collection<Object> values) {
         return in(values == null ? null : values.toArray());
     }
 
@@ -66,7 +64,7 @@ public class FieldQueryBuilder implements QueryBuilder {
     }
 
     @Override
-    public Query nin(Collection<Objects> values) {
+    public Query nin(Collection<Object> values) {
         return nin(values == null ? null : values.toArray());
     }
 
