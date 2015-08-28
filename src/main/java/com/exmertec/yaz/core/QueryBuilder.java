@@ -11,11 +11,11 @@ public interface QueryBuilder {
 
     Query in(Object... values);
 
-    Query in(Collection<Object> values);
+    <T> Query in(Collection<T> values);
 
     Query nin(Object... values);
 
-    Query nin(Collection<Object> values);
+    <T> Query nin(Collection<T> values);
 
     <T extends Comparable<? super T>> Query between(T value1, T value2);
 

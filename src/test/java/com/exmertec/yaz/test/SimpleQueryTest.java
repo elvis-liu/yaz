@@ -12,6 +12,8 @@ import com.exmertec.yaz.model.User;
 import org.assertj.core.util.Lists;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SimpleQueryTest extends TestBase {
@@ -63,7 +65,7 @@ public class SimpleQueryTest extends TestBase {
         prepareUser("name1");
         prepareUser("name2");
 
-        List<User> result = new UserDao().where(field("name").in(Lists.newArrayList("name1"))).queryList();
+        List<User> result = new UserDao().where(field("name").in(Arrays.asList("name1"))).queryList();
 
         assertThat(result.size()).isEqualTo(1);
         assertThat(result.get(0).getName()).isEqualTo("name1");
@@ -82,7 +84,7 @@ public class SimpleQueryTest extends TestBase {
     public void should_query_when_in_empty_list_conditions() throws Exception {
         prepareUser("name");
 
-        List<User> result = new UserDao().where(field("name").in(Lists.emptyList())).queryList();
+        List<User> result = new UserDao().where(field("name").in(new ArrayList<>())).queryList();
 
         assertThat(result.size()).isEqualTo(0);
     }

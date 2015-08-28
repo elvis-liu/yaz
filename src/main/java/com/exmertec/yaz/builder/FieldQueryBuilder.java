@@ -50,7 +50,7 @@ public class FieldQueryBuilder implements QueryBuilder {
     }
 
     @Override
-    public Query in(Collection<Object> values) {
+    public <T> Query in(Collection<T> values) {
         return in(values == null ? null : values.toArray());
     }
 
@@ -64,7 +64,7 @@ public class FieldQueryBuilder implements QueryBuilder {
     }
 
     @Override
-    public Query nin(Collection<Object> values) {
+    public <T> Query nin(Collection<T> values) {
         return nin(values == null ? null : values.toArray());
     }
 
