@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 
 public class BooleanQuery implements Query {
@@ -21,9 +22,10 @@ public class BooleanQuery implements Query {
     }
 
     @Override
-    public List<Predicate> toRestrictions(CriteriaBuilder criteriaBuilder, AbstractQuery<?> abstractQuery) {
+    public List<Predicate> toRestrictions(CriteriaBuilder criteriaBuilder, AbstractQuery<?> abstractQuery,
+                                          From entity) {
         Predicate[] predicates = queries.stream()
-            .map(query -> Optional.of(query.toRestrictions(criteriaBuilder, abstractQuery)).get())
+            .map(query -> Optional.of(query.toRestrictions(criteriaBuilder, abstractQuery, entity)).get())
             .flatMap(Collection::stream)
             .toArray(Predicate[]::new);
 

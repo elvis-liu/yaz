@@ -74,7 +74,7 @@ public class FieldQueryBuilder implements QueryBuilder {
     }
 
     @Override
-    public <T extends Comparable<? super T>> Query gt(T value) {
+    public <T extends Comparable<? super T>> Query gtComparable(T value) {
         return new ComparableCompareQuery<>(fieldName, value, CriteriaBuilder::greaterThan);
     }
 
@@ -84,7 +84,7 @@ public class FieldQueryBuilder implements QueryBuilder {
     }
 
     @Override
-    public <T extends Comparable<? super T>> Query lt(T value) {
+    public <T extends Comparable<? super T>> Query ltComparable(T value) {
         return new ComparableCompareQuery<>(fieldName, value, CriteriaBuilder::lessThan);
     }
 
@@ -94,7 +94,7 @@ public class FieldQueryBuilder implements QueryBuilder {
     }
 
     @Override
-    public <T extends Comparable<? super T>> Query gte(T value) {
+    public <T extends Comparable<? super T>> Query gteComparable(T value) {
         return new ComparableCompareQuery<>(fieldName, value, CriteriaBuilder::greaterThanOrEqualTo);
     }
 
@@ -104,7 +104,7 @@ public class FieldQueryBuilder implements QueryBuilder {
     }
 
     @Override
-    public <T extends Comparable<? super T>> Query lte(T value) {
+    public <T extends Comparable<? super T>> Query lteComparable(T value) {
         return new ComparableCompareQuery<>(fieldName, value, CriteriaBuilder::lessThanOrEqualTo);
     }
 

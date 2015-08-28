@@ -5,8 +5,8 @@ import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 
 public class LikeQuery extends ComplexQueryBase<String> {
     public LikeQuery(String field, String value) {
@@ -14,7 +14,7 @@ public class LikeQuery extends ComplexQueryBase<String> {
     }
 
     @Override
-    protected List<Predicate> doGenerate(CriteriaBuilder criteriaBuilder, Root<?> entity, String field,
+    protected List<Predicate> doGenerate(CriteriaBuilder criteriaBuilder, From entity, String field,
                                          Iterable<Expression<String>> values) {
         Expression<String> expression = values.iterator().next();
         return Arrays.asList(criteriaBuilder.like(entity.<String>get(field), expression));

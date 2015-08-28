@@ -6,8 +6,8 @@ import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 
 public class ComparableBetweenQuery<T extends Comparable<? super T>> extends ComplexQueryBase<T> {
     public ComparableBetweenQuery(String field, T value1, T value2) {
@@ -15,7 +15,7 @@ public class ComparableBetweenQuery<T extends Comparable<? super T>> extends Com
     }
 
     @Override
-    protected List<Predicate> doGenerate(CriteriaBuilder criteriaBuilder, Root<?> entity, String field,
+    protected List<Predicate> doGenerate(CriteriaBuilder criteriaBuilder, From entity, String field,
                                          Iterable<Expression<T>> expressions) {
         Iterator<Expression<T>> iterator = expressions.iterator();
         Expression<T> expression1 = iterator.next();

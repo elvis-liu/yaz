@@ -5,9 +5,9 @@ import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 
 public class ComparableCompareQuery<T extends Comparable<? super T>> extends ComplexQueryBase<T> {
     private ExpressionEvaluator evaluator;
@@ -18,7 +18,7 @@ public class ComparableCompareQuery<T extends Comparable<? super T>> extends Com
     }
 
     @Override
-    protected List<Predicate> doGenerate(CriteriaBuilder criteriaBuilder, Root<?> entity, String field,
+    protected List<Predicate> doGenerate(CriteriaBuilder criteriaBuilder, From entity, String field,
                                          Iterable<Expression<T>> expressions) {
         Expression<T> expression = expressions.iterator().next();
         return Arrays.asList(evaluator.evaluate(criteriaBuilder, entity.<T>get(field), expression));

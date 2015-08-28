@@ -46,6 +46,12 @@ public abstract class TestBase {
         }
     }
 
+    protected class GenericDao<T> extends BaseDao<T> {
+        public GenericDao(Class<T> prototype) {
+            super(TestBase.this.entityManager, prototype);
+        }
+    }
+
     protected class OrderBuilder {
         private Order order = new Order();
 
