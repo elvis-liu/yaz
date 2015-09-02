@@ -57,10 +57,8 @@ public class SubqueryExpressionGenerator<F, T> implements ExpressionGenerator<T>
 
     private static Predicate[] generateRestrictions(CriteriaBuilder criteriaBuilder, AbstractQuery<?> query,
                                                     Iterable<Query> generators) {
-        Root<?> entity = query.getRoots().iterator().next();
         return StreamSupport.stream(generators.spliterator(), false)
-            .map(generator -> Optional.of(generator.toRestrictions(criteriaBuilder, query,
-                                                        entity)).orElseGet(ArrayList::new))
+            .map(generator -> Optional.of(generator.toRestrictions(criteriaBuilder, query)).orElseGet(ArrayList::new))
             .flatMap(restrictions -> restrictions.stream())
             .toArray(Predicate[]::new);
     }

@@ -33,8 +33,8 @@ interface CriteriaQueryGenerator<T> {
 
     EntityManager getEntityManager();
 
-    default Root<T> getRoot(AbstractQuery<?> abstractQuery) {
-        Set<Root<?>> roots = abstractQuery.getRoots();
+    default Root<T> getRoot(CriteriaQuery<?> criteriaQuery) {
+        Set<Root<?>> roots = criteriaQuery.getRoots();
         if (roots.size() != 1) {
             throw new IllegalStateException("Query contains more than one root entity!");
         }
@@ -52,8 +52,7 @@ interface CriteriaQueryGenerator<T> {
     default Predicate[] generateRestrictions(AbstractQuery<?> abstractQuery, List<Query> queries) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         return queries.stream()
-            .map(query -> Optional.of(query.toRestrictions(criteriaBuilder, abstractQuery,
-                                                           getRoot(abstractQuery))).get())
+            .map(query -> Optional.of(query.toRestrictions(criteriaBuilder, abstractQuery)).get())
             .flatMap(Collection::stream)
             .toArray(Predicate[]::new);
     }

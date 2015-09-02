@@ -6,8 +6,8 @@ import java.util.stream.StreamSupport;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 public class NinQuery extends ComplexQueryBase<Object> {
     public NinQuery(String field, Object... values) {
@@ -15,7 +15,7 @@ public class NinQuery extends ComplexQueryBase<Object> {
     }
 
     @Override
-    protected List<Predicate> doGenerate(CriteriaBuilder criteriaBuilder, From entity, String field,
+    protected List<Predicate> doGenerate(CriteriaBuilder criteriaBuilder, Root<?> entity, String field,
                                          Iterable<Expression<Object>> expressions) {
         Expression[] expressionArray = StreamSupport.stream(expressions.spliterator(), false).toArray(
             Expression[]::new);

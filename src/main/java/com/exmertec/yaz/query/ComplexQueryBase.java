@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -25,8 +24,7 @@ public abstract class ComplexQueryBase<T> implements Query {
     }
 
     public final List<Predicate> toRestrictions(final CriteriaBuilder criteriaBuilder,
-                                                final AbstractQuery<?> abstractQuery,
-                                                From entity) {
+                                                final AbstractQuery<?> abstractQuery) {
         if (values.isEmpty()) {
             return new ArrayList<>();
         }
@@ -35,6 +33,7 @@ public abstract class ComplexQueryBase<T> implements Query {
             .map(input -> toExpression(criteriaBuilder, abstractQuery, input))
             .collect(Collectors.toList());
 
+        Root<?> entity = abstractQuery.getRoots().iterator().next();
         return doGenerate(criteriaBuilder, entity, field, expressions);
     }
 
@@ -51,7 +50,7 @@ public abstract class ComplexQueryBase<T> implements Query {
         return criteriaBuilder.literal(input);
     }
 
-    protected abstract List<Predicate> doGenerate(CriteriaBuilder criteriaBuilder, From entity, String field,
+    protected abstract List<Predicate> doGenerate(CriteriaBuilder criteriaBuilder, Root<?> entity, String field,
                                                   Iterable<Expression<T>> expressions);
 
     @Override

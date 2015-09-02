@@ -1,12 +1,10 @@
 package com.exmertec.yaz;
 
 import com.exmertec.yaz.builder.CoreCommandBuilder;
-import com.exmertec.yaz.builder.CoreJoinBuilder;
 import com.exmertec.yaz.builder.FieldQueryBuilder;
 import com.exmertec.yaz.builder.IdEqualsCommandBuilder;
 import com.exmertec.yaz.core.AdvancedCommandBuilder;
 import com.exmertec.yaz.core.BasicCommandBuilder;
-import com.exmertec.yaz.core.JoinBuilder;
 import com.exmertec.yaz.core.Query;
 import com.exmertec.yaz.core.QueryBuilder;
 import com.exmertec.yaz.expression.ExpressionGenerator;
@@ -66,10 +64,6 @@ public abstract class BaseDao<T> {
 
     public static QueryBuilder field(String fieldName) {
         return new FieldQueryBuilder(fieldName);
-    }
-
-    public static JoinBuilder joinBy(String fieldName) {
-        return new CoreJoinBuilder(fieldName);
     }
 
     public static ExpressionGenerator subquery(Class<?> fromType, String targetField, Query... queries) {
