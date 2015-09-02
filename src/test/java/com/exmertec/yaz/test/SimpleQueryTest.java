@@ -9,7 +9,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.exmertec.yaz.model.Order;
 import com.exmertec.yaz.model.User;
 
-import org.assertj.core.util.Lists;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -157,7 +156,7 @@ public class SimpleQueryTest extends TestBase {
         buildUser().name("a").save();
         Long userId = buildUser().name("b").save();
 
-        builderOrder().userId(userId).save();
+        buildOrder().userId(userId).save();
 
         List<User> result = new UserDao().where(field("id").in(subquery(Order.class, "userId"))).queryList();
 

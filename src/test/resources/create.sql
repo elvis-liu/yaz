@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS `ORDER`(`id` BIGINT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+                  `user_id` BIGINT DEFAULT NULL,
+                  `amount` DOUBLE DEFAULT NULL);
+
+CREATE TABLE IF NOT EXISTS `USER`(`id` BIGINT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+                  `name` VARCHAR(64) DEFAULT NULL,
+                  `points` INT DEFAULT NULL,
+                  `type` INT DEFAULT NULL);

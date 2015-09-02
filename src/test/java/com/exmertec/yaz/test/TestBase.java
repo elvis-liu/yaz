@@ -30,7 +30,7 @@ public abstract class TestBase {
         return new UserBuilder();
     }
 
-    protected OrderBuilder builderOrder() {
+    protected OrderBuilder buildOrder() {
         return new OrderBuilder();
     }
 
@@ -43,6 +43,12 @@ public abstract class TestBase {
     protected class OrderDao extends BaseDao<Order> {
         public OrderDao() {
             super(TestBase.this.entityManager, Order.class);
+        }
+    }
+
+    protected class GenericDao<T> extends BaseDao<T> {
+        public GenericDao(Class<T> prototype) {
+            super(TestBase.this.entityManager, prototype);
         }
     }
 
