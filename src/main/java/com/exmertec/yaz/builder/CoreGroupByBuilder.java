@@ -42,14 +42,15 @@ public class CoreGroupByBuilder<T> implements GroupByBuilder {
     @Override
     public List<Tuple> queryList() {
         EntityManager entityManager = criteriaQueryGenerator.getEntityManager();
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Tuple> tupleQuery = cb.createTupleQuery();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Tuple> tupleQuery = criteriaBuilder.createTupleQuery();
 
         Root<T> root = tupleQuery.from(criteriaQueryGenerator.getProtoType());
-        List<Selection<?>> selections = generateMultiSelections(cb, root);
+        List<Selection<?>> selections = generateMultiSelections(criteriaBuilder, root);
         tupleQuery.multiselect(selections);
         tupleQuery.groupBy(root.get(groupByField));
         tupleQuery.where(criteriaQueryGenerator.generateRestrictions(tupleQuery, criteriaQueryGenerator.getQueries()));
+        criteriaQueryGenerator.appendOrderBy(criteriaBuilder, tupleQuery);
 
         return entityManager.createQuery(tupleQuery).getResultList();
     }
