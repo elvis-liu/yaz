@@ -42,6 +42,11 @@ public class CoreGroupByBuilder<T> implements GroupByBuilder {
         return addAggregator(targetField, (cb, root) -> cb.sum(root.get(targetField)));
     }
 
+    @Override
+    public AliasAssigner<GroupByBuilder> avg(String targetField) {
+        return addAggregator(targetField, (cb, root) -> cb.avg(root.get(targetField)));
+    }
+
     private AliasAssigner<GroupByBuilder> addAggregator(String targetField,
                                                         GroupByExpressionGenerator expressionGenerator) {
         GroupByAggregator aggregator = new GroupByAggregator(targetField, expressionGenerator);

@@ -163,4 +163,28 @@ public class GroupByActionTest extends TestBase {
         assertThat(results.get(2).get("sumPoints")).isEqualTo(1L);
         assertThat(results.get(2).get("name")).isEqualTo("b");
     }
+
+    @Test
+    public void should_support_avg_when_group_by() throws Exception {
+        buildUser().name("c").points(1).save();
+        buildUser().name("a").points(2).save();
+        buildUser().name("c").points(1).save();
+        buildUser().name("b").points(3).save();
+        buildUser().name("c").points(1).save();
+        buildUser().name("a").points(2).save();
+
+        List<Tuple> results = new UserDao().where()
+            .groupBy("name")
+            .avg("points").as("avgPoints")
+            .descendingByAlias("avgPoints")
+            .queryList();
+
+        assertThat(results.size()).isEqualTo(3);
+        assertThat(results.get(0).get("avgPoints")).isEqualTo(3.0);
+        assertThat(results.get(0).get("name")).isEqualTo("b");
+        assertThat(results.get(1).get("avgPoints")).isEqualTo(2.0);
+        assertThat(results.get(1).get("name")).isEqualTo("a");
+        assertThat(results.get(2).get("avgPoints")).isEqualTo(1.0);
+        assertThat(results.get(2).get("name")).isEqualTo("c");
+    }
 }
