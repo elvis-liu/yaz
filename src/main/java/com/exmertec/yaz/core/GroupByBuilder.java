@@ -11,6 +11,10 @@ public interface GroupByBuilder {
 
     AliasAssigner<GroupByBuilder> avg(String field);
 
+    AliasAssigner<GroupByBuilder> max(String field);
+
+    AliasAssigner<GroupByBuilder> min(String field);
+
     List<Tuple> queryList();
 
     GroupByBuilder ascendingByAlias(String alias);

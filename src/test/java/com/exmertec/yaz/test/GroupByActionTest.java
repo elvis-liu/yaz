@@ -187,4 +187,52 @@ public class GroupByActionTest extends TestBase {
         assertThat(results.get(2).get("avgPoints")).isEqualTo(1.0);
         assertThat(results.get(2).get("name")).isEqualTo("c");
     }
+
+    @Test
+    public void should_support_max_when_group_by() throws Exception {
+        buildUser().name("c").points(1).save();
+        buildUser().name("a").points(5).save();
+        buildUser().name("c").points(2).save();
+        buildUser().name("b").points(6).save();
+        buildUser().name("c").points(3).save();
+        buildUser().name("a").points(4).save();
+
+        List<Tuple> results = new UserDao().where()
+            .groupBy("name")
+            .max("points").as("maxPoints")
+            .descendingByAlias("maxPoints")
+            .queryList();
+
+        assertThat(results.size()).isEqualTo(3);
+        assertThat(results.get(0).get("maxPoints")).isEqualTo(6);
+        assertThat(results.get(0).get("name")).isEqualTo("b");
+        assertThat(results.get(1).get("maxPoints")).isEqualTo(5);
+        assertThat(results.get(1).get("name")).isEqualTo("a");
+        assertThat(results.get(2).get("maxPoints")).isEqualTo(3);
+        assertThat(results.get(2).get("name")).isEqualTo("c");
+    }
+
+    @Test
+    public void should_support_min_when_group_by() throws Exception {
+        buildUser().name("c").points(1).save();
+        buildUser().name("a").points(5).save();
+        buildUser().name("c").points(2).save();
+        buildUser().name("b").points(6).save();
+        buildUser().name("c").points(3).save();
+        buildUser().name("a").points(4).save();
+
+        List<Tuple> results = new UserDao().where()
+            .groupBy("name")
+            .min("points").as("minPoints")
+            .descendingByAlias("minPoints")
+            .queryList();
+
+        assertThat(results.size()).isEqualTo(3);
+        assertThat(results.get(0).get("minPoints")).isEqualTo(6);
+        assertThat(results.get(0).get("name")).isEqualTo("b");
+        assertThat(results.get(1).get("minPoints")).isEqualTo(4);
+        assertThat(results.get(1).get("name")).isEqualTo("a");
+        assertThat(results.get(2).get("minPoints")).isEqualTo(1);
+        assertThat(results.get(2).get("name")).isEqualTo("c");
+    }
 }

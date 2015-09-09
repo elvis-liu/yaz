@@ -16,6 +16,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
@@ -34,21 +35,31 @@ public class CoreGroupByBuilder<T> implements GroupByBuilder {
 
     @Override
     public AliasAssigner<GroupByBuilder> count(String targetField) {
-        return addAggregator(targetField, (cb, root) -> cb.count(root.get(targetField)));
+        return addAggregator(targetField, CriteriaBuilder::count);
     }
 
     @Override
     public AliasAssigner<GroupByBuilder> sum(String targetField) {
-        return addAggregator(targetField, (cb, root) -> cb.sum(root.get(targetField)));
+        return addAggregator(targetField, CriteriaBuilder::sum);
     }
 
     @Override
     public AliasAssigner<GroupByBuilder> avg(String targetField) {
-        return addAggregator(targetField, (cb, root) -> cb.avg(root.get(targetField)));
+        return addAggregator(targetField, CriteriaBuilder::avg);
+    }
+
+    @Override
+    public AliasAssigner<GroupByBuilder> max(String targetField) {
+        return addAggregator(targetField, CriteriaBuilder::max);
+    }
+
+    @Override
+    public AliasAssigner<GroupByBuilder> min(String targetField) {
+        return addAggregator(targetField, CriteriaBuilder::min);
     }
 
     private AliasAssigner<GroupByBuilder> addAggregator(String targetField,
-                                                        GroupByExpressionGenerator expressionGenerator) {
+                                                        AggregatorExpressionGenerator expressionGenerator) {
         GroupByAggregator aggregator = new GroupByAggregator(targetField, expressionGenerator);
         aggregators.add(aggregator);
         return aggregator;
@@ -105,10 +116,10 @@ public class CoreGroupByBuilder<T> implements GroupByBuilder {
 
     private class GroupByAggregator implements AliasAssigner<GroupByBuilder> {
         private String field;
-        private GroupByExpressionGenerator expressionGenerator;
+        private AggregatorExpressionGenerator expressionGenerator;
         private String alias;
 
-        public GroupByAggregator(String field, GroupByExpressionGenerator expressionGenerator) {
+        public GroupByAggregator(String field, AggregatorExpressionGenerator expressionGenerator) {
             this.field = field;
             this.expressionGenerator = expressionGenerator;
         }
@@ -124,7 +135,7 @@ public class CoreGroupByBuilder<T> implements GroupByBuilder {
         }
 
         public Selection<?> generateSelection(CriteriaBuilder criteriaBuilder, Root root) {
-            return expressionGenerator.generateExpression(criteriaBuilder, root).alias(alias);
+            return getExpression(criteriaBuilder, root).alias(alias);
         }
 
         public String getAlias() {
@@ -132,13 +143,13 @@ public class CoreGroupByBuilder<T> implements GroupByBuilder {
         }
 
         public Expression getExpression(CriteriaBuilder criteriaBuilder, Root<T> root) {
-            return expressionGenerator.generateExpression(criteriaBuilder, root);
+            return expressionGenerator.generate(criteriaBuilder, root.get(field));
         }
     }
 
     @FunctionalInterface
-    private interface GroupByExpressionGenerator {
-        Expression<?> generateExpression(CriteriaBuilder cb, Root root);
+    private interface AggregatorExpressionGenerator<T> {
+        Expression<T> generate(CriteriaBuilder cb, Path<T> path);
     }
 
     private class AliasOrderByRule {
