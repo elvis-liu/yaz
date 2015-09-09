@@ -130,8 +130,8 @@ public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T>, Criteri
     }
 
     @Override
-    public GroupByBuilder groupBy(String fieldName) {
-        return new CoreGroupByBuilder<>(this, fieldName);
+    public GroupByBuilder groupBy(String... fieldNames) {
+        return new CoreGroupByBuilder<>(this, Arrays.asList(fieldNames));
     }
 
     @Override

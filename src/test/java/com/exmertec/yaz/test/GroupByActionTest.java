@@ -3,6 +3,8 @@ package com.exmertec.yaz.test;
 import static com.exmertec.yaz.BaseDao.field;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.exmertec.yaz.model.UserType;
+
 import org.junit.Test;
 
 import java.util.List;
@@ -55,7 +57,11 @@ public class GroupByActionTest extends TestBase {
         buildUser().name("c").save();
         buildUser().name("a").save();
 
-        List<Tuple> resultList = new UserDao().where().descendingBy("name").groupBy("name").count("name").as("nameCount").queryList();
+        List<Tuple> resultList = new UserDao().where()
+                .descendingBy("name")
+                .groupBy("name")
+                .count("name").as("nameCount")
+                .queryList();
 
         assertThat(resultList.size()).isEqualTo(3);
         assertThat(resultList.get(0).get("name")).isEqualTo("c");
@@ -64,5 +70,49 @@ public class GroupByActionTest extends TestBase {
         assertThat(resultList.get(1).get("nameCount")).isEqualTo(1L);
         assertThat(resultList.get(2).get("name")).isEqualTo("a");
         assertThat(resultList.get(2).get("nameCount")).isEqualTo(2L);
+    }
+
+    @Test
+    public void should_support_sum_after_use_group_by() throws Exception {
+        buildUser().name("c").points(1).save();
+        buildUser().name("a").points(1).save();
+        buildUser().name("c").points(1).save();
+        buildUser().name("b").points(1).save();
+        buildUser().name("c").points(1).save();
+        buildUser().name("a").points(1).save();
+
+        List<Tuple> results = new UserDao().where()
+                .descendingBy("name")
+                .groupBy("name")
+                .sum("points").as("sumPoints")
+                .queryList();
+
+        assertThat(results.size()).isEqualTo(3);
+        assertThat(results.get(0).get("sumPoints")).isEqualTo(3L);
+        assertThat(results.get(1).get("sumPoints")).isEqualTo(1L);
+        assertThat(results.get(2).get("sumPoints")).isEqualTo(2L);
+    }
+
+    @Test
+    public void should_support_multi_group_by_fields() throws Exception {
+        buildUser().name("a").type(UserType.NORMAL).points(1).save();
+        buildUser().name("b").type(UserType.NORMAL).points(1).save();
+        buildUser().name("c").type(UserType.NORMAL).points(1).save();
+        buildUser().name("a").type(UserType.NORMAL).points(1).save();
+        buildUser().name("b").type(UserType.VIP).points(1).save();
+        buildUser().name("c").type(UserType.VIP).points(1).save();
+
+        List<Tuple> results = new UserDao().where().groupBy("name", "type")
+                .sum("points").as("sumPoints")
+                .queryList();
+
+        assertThat(results.size()).isEqualTo(5);
+        for (Tuple tuple : results) {
+            if (tuple.get("name").equals("a") && tuple.get("type").equals(UserType.NORMAL)) {
+                assertThat(tuple.get("sumPoints")).isEqualTo(2L);
+            } else {
+                assertThat(tuple.get("sumPoints")).isEqualTo(1L);
+            }
+        }
     }
 }
