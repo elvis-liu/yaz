@@ -29,5 +29,5 @@ public interface AdvancedCommandBuilder<T> extends BasicCommandBuilder<T> {
 
     DistinctSelectionBuilder distinctSelect(String fieldName);
 
-    GroupByBuilder groupBy(String ...fieldName);
+    GroupByBuilder groupBy(String... fieldNames);
 }
