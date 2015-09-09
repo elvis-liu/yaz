@@ -18,18 +18,23 @@ import javax.persistence.criteria.Selection;
 
 public class CoreGroupByBuilder<T> implements GroupByBuilder {
     private final CriteriaQueryGenerator<T> criteriaQueryGenerator;
-    private final String groupByField;
+    private final List<String> groupByFields;
     private final List<GroupByAggregator> aggregators;
 
-    public CoreGroupByBuilder(CriteriaQueryGenerator<T> criteriaQueryGenerator, String groupByField) {
+    public CoreGroupByBuilder(CriteriaQueryGenerator<T> criteriaQueryGenerator, List<String> groupByFields) {
         this.criteriaQueryGenerator = criteriaQueryGenerator;
-        this.groupByField = groupByField;
+        this.groupByFields = groupByFields;
         aggregators = new ArrayList<>();
     }
 
     @Override
     public AliasAssigner<GroupByBuilder> count(String targetField) {
         return addAggregator(targetField, (cb, root) -> cb.count(root.get(targetField)));
+    }
+
+    @Override
+    public AliasAssigner<GroupByBuilder> sum(String targetField) {
+        return addAggregator(targetField, (cb, root) -> cb.sum(root.get(targetField)));
     }
 
     private AliasAssigner<GroupByBuilder> addAggregator(String targetField,
@@ -48,16 +53,20 @@ public class CoreGroupByBuilder<T> implements GroupByBuilder {
         Root<T> root = tupleQuery.from(criteriaQueryGenerator.getProtoType());
         List<Selection<?>> selections = generateMultiSelections(criteriaBuilder, root);
         tupleQuery.multiselect(selections);
-        tupleQuery.groupBy(root.get(groupByField));
+        tupleQuery.groupBy(getGroupByExpression(root));
         tupleQuery.where(criteriaQueryGenerator.generateRestrictions(tupleQuery, criteriaQueryGenerator.getQueries()));
         criteriaQueryGenerator.appendOrderBy(criteriaBuilder, tupleQuery);
 
         return entityManager.createQuery(tupleQuery).getResultList();
     }
 
+    private List<Expression<?>> getGroupByExpression(Root<T> root) {
+        return groupByFields.stream().map(field -> root.get(field)).collect(toList());
+    }
+
     private List<Selection<?>> generateMultiSelections(CriteriaBuilder cb, Root<T> root) {
         List<Selection<?>> selections = new ArrayList<>();
-        selections.add(root.get(groupByField).alias(groupByField));
+        selections.addAll(groupByFields.stream().map(field -> root.get(field).alias(field)).collect(toList()));
         selections.addAll(aggregators.stream().map(
             aggregator -> aggregator.generateSelection(cb, root)).collect(toList()));
         return selections;
