@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toList;
 
 import com.exmertec.yaz.core.AdvancedCommandBuilder;
 import com.exmertec.yaz.core.DistinctSelectionBuilder;
+import com.exmertec.yaz.core.GroupByBuilder;
 import com.exmertec.yaz.core.Query;
 import com.exmertec.yaz.core.SelectionBuilder;
 
@@ -126,6 +127,11 @@ public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T>, Criteri
     @Override
     public DistinctSelectionBuilder distinctSelect(String fieldName) {
         return new CoreDistinctSelectionBuilder<>(this, fieldName);
+    }
+
+    @Override
+    public GroupByBuilder groupBy(String fieldName) {
+        return new CoreGroupByBuilder<>(this, fieldName);
     }
 
     @Override
