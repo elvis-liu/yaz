@@ -115,4 +115,52 @@ public class GroupByActionTest extends TestBase {
             }
         }
     }
+
+    @Test
+    public void should_support_ascending_by_alias() throws Exception {
+        buildUser().name("c").points(1).save();
+        buildUser().name("a").points(1).save();
+        buildUser().name("c").points(1).save();
+        buildUser().name("b").points(1).save();
+        buildUser().name("c").points(1).save();
+        buildUser().name("a").points(1).save();
+
+        List<Tuple> results = new UserDao().where()
+            .groupBy("name")
+            .sum("points").as("sumPoints")
+            .ascendingByAlias("sumPoints")
+            .queryList();
+
+        assertThat(results.size()).isEqualTo(3);
+        assertThat(results.get(0).get("sumPoints")).isEqualTo(1L);
+        assertThat(results.get(0).get("name")).isEqualTo("b");
+        assertThat(results.get(1).get("sumPoints")).isEqualTo(2L);
+        assertThat(results.get(1).get("name")).isEqualTo("a");
+        assertThat(results.get(2).get("sumPoints")).isEqualTo(3L);
+        assertThat(results.get(2).get("name")).isEqualTo("c");
+    }
+
+    @Test
+    public void should_support_descending_by_alias() throws Exception {
+        buildUser().name("c").points(1).save();
+        buildUser().name("a").points(1).save();
+        buildUser().name("c").points(1).save();
+        buildUser().name("b").points(1).save();
+        buildUser().name("c").points(1).save();
+        buildUser().name("a").points(1).save();
+
+        List<Tuple> results = new UserDao().where()
+            .groupBy("name")
+            .sum("points").as("sumPoints")
+            .descendingByAlias("sumPoints")
+            .queryList();
+
+        assertThat(results.size()).isEqualTo(3);
+        assertThat(results.get(0).get("sumPoints")).isEqualTo(3L);
+        assertThat(results.get(0).get("name")).isEqualTo("c");
+        assertThat(results.get(1).get("sumPoints")).isEqualTo(2L);
+        assertThat(results.get(1).get("name")).isEqualTo("a");
+        assertThat(results.get(2).get("sumPoints")).isEqualTo(1L);
+        assertThat(results.get(2).get("name")).isEqualTo("b");
+    }
 }

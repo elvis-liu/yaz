@@ -10,4 +10,8 @@ public interface GroupByBuilder {
     AliasAssigner<GroupByBuilder> sum(String fields);
 
     List<Tuple> queryList();
+
+    GroupByBuilder ascendingByAlias(String alias);
+
+    GroupByBuilder descendingByAlias(String alias);
 }

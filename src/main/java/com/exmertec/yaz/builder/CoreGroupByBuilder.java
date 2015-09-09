@@ -7,12 +7,15 @@ import com.exmertec.yaz.core.GroupByBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
@@ -20,11 +23,13 @@ public class CoreGroupByBuilder<T> implements GroupByBuilder {
     private final CriteriaQueryGenerator<T> criteriaQueryGenerator;
     private final List<String> groupByFields;
     private final List<GroupByAggregator> aggregators;
+    private final List<AliasOrderByRule> aliasOrderByRules;
 
     public CoreGroupByBuilder(CriteriaQueryGenerator<T> criteriaQueryGenerator, List<String> groupByFields) {
         this.criteriaQueryGenerator = criteriaQueryGenerator;
         this.groupByFields = groupByFields;
         aggregators = new ArrayList<>();
+        aliasOrderByRules = new ArrayList<>();
     }
 
     @Override
@@ -55,9 +60,30 @@ public class CoreGroupByBuilder<T> implements GroupByBuilder {
         tupleQuery.multiselect(selections);
         tupleQuery.groupBy(getGroupByExpression(root));
         tupleQuery.where(criteriaQueryGenerator.generateRestrictions(tupleQuery, criteriaQueryGenerator.getQueries()));
-        criteriaQueryGenerator.appendOrderBy(criteriaBuilder, tupleQuery);
+        tupleQuery.orderBy(getOrders(criteriaBuilder, root));
 
         return entityManager.createQuery(tupleQuery).getResultList();
+    }
+
+    private List<Order> getOrders(CriteriaBuilder criteriaBuilder, Root<T> root) {
+        Stream<Order> fieldOrderStream = criteriaQueryGenerator.getOrderByRules().stream()
+            .map(rule -> rule.getOrder(criteriaBuilder, root));
+        Stream<Order> aliasOrderStream = aliasOrderByRules.stream()
+            .map(rule -> rule.getAliasOrder(criteriaBuilder, root));
+
+        return Stream.concat(fieldOrderStream, aliasOrderStream).collect(toList());
+    }
+
+    @Override
+    public GroupByBuilder ascendingByAlias(String alias) {
+        aliasOrderByRules.add(new AliasOrderByRule(true, alias));
+        return this;
+    }
+
+    @Override
+    public GroupByBuilder descendingByAlias(String alias) {
+        aliasOrderByRules.add(new AliasOrderByRule(false, alias));
+        return this;
     }
 
     private List<Expression<?>> getGroupByExpression(Root<T> root) {
@@ -76,7 +102,6 @@ public class CoreGroupByBuilder<T> implements GroupByBuilder {
         private String field;
         private GroupByExpressionGenerator expressionGenerator;
         private String alias;
-        private Expression<?> expression;
 
         public GroupByAggregator(String field, GroupByExpressionGenerator expressionGenerator) {
             this.field = field;
@@ -93,14 +118,39 @@ public class CoreGroupByBuilder<T> implements GroupByBuilder {
             return field;
         }
 
-        public Selection<?> generateSelection(CriteriaBuilder cb, Root root) {
-            expression = expressionGenerator.generateExpression(cb, root);
-            return expression.alias(alias);
+        public Selection<?> generateSelection(CriteriaBuilder criteriaBuilder, Root root) {
+            return expressionGenerator.generateExpression(criteriaBuilder, root).alias(alias);
+        }
+
+        public String getAlias() {
+            return alias;
+        }
+
+        public Expression getExpression(CriteriaBuilder criteriaBuilder, Root<T> root) {
+            return expressionGenerator.generateExpression(criteriaBuilder, root);
         }
     }
 
     @FunctionalInterface
     private interface GroupByExpressionGenerator {
         Expression<?> generateExpression(CriteriaBuilder cb, Root root);
+    }
+
+    private class AliasOrderByRule {
+        private boolean isAscending;
+        private String alias;
+
+        public AliasOrderByRule(boolean isAscending, String alias) {
+            this.isAscending = isAscending;
+            this.alias = alias;
+        }
+
+        public Order getAliasOrder(CriteriaBuilder criteriaBuilder, Root<T> root) {
+            Optional<GroupByAggregator> aggregator = aggregators.stream().filter(
+                agg -> agg.getAlias().equals(alias)).findFirst();
+            Expression expression = aggregator.orElseThrow(IllegalStateException::new).getExpression(criteriaBuilder,
+                                                                                                     root);
+            return isAscending ? criteriaBuilder.asc(expression) : criteriaBuilder.desc(expression);
+        }
     }
 }
