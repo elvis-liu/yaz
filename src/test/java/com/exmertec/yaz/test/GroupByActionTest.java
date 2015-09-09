@@ -1,5 +1,6 @@
 package com.exmertec.yaz.test;
 
+import static com.exmertec.yaz.BaseDao.field;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
@@ -18,5 +19,17 @@ public class GroupByActionTest extends TestBase {
         List<Tuple> resultList = new UserDao().where().groupBy("name").count("name").as("nameCount").queryList();
 
         assertThat(resultList.size()).isEqualTo(2);
+    }
+
+    @Test
+    public void should_group_by_with_where_restrictions() throws Exception {
+        buildUser().name("a").save();
+        buildUser().name("a").save();
+        buildUser().name("b").save();
+
+        List<Tuple> resultList = new UserDao().where(field("name").ne("b")).groupBy("name").count("name").as("nameCount").queryList();
+
+        assertThat(resultList.size()).isEqualTo(1);
+        assertThat(resultList.get(0).get("nameCount")).isEqualTo(2L);
     }
 }
