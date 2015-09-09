@@ -32,4 +32,17 @@ public class GroupByActionTest extends TestBase {
         assertThat(resultList.size()).isEqualTo(1);
         assertThat(resultList.get(0).get("nameCount")).isEqualTo(2L);
     }
+
+    @Test
+    public void should_provide_group_by_field_automatically() throws Exception {
+        buildUser().name("a").save();
+        buildUser().name("a").save();
+        buildUser().name("b").save();
+
+        List<Tuple> resultList = new UserDao().where(field("name").ne("b")).groupBy("name").count("name").as("nameCount").queryList();
+
+        assertThat(resultList.size()).isEqualTo(1);
+        assertThat(resultList.get(0).get("name")).isEqualTo("a");
+        assertThat(resultList.get(0).get("nameCount")).isEqualTo(2L);
+    }
 }

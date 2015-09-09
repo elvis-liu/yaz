@@ -46,7 +46,7 @@ public class CoreGroupByBuilder<T> implements GroupByBuilder {
         CriteriaQuery<Tuple> tupleQuery = cb.createTupleQuery();
 
         Root<T> root = tupleQuery.from(criteriaQueryGenerator.getProtoType());
-        List<Selection<?>> selections = generateAggregatorSelections(cb, root);
+        List<Selection<?>> selections = generateMultiSelections(cb, root);
         tupleQuery.multiselect(selections);
         tupleQuery.groupBy(root.get(groupByField));
         tupleQuery.where(criteriaQueryGenerator.generateRestrictions(tupleQuery, criteriaQueryGenerator.getQueries()));
@@ -54,9 +54,12 @@ public class CoreGroupByBuilder<T> implements GroupByBuilder {
         return entityManager.createQuery(tupleQuery).getResultList();
     }
 
-    private List<Selection<?>> generateAggregatorSelections(CriteriaBuilder cb, Root<T> root) {
-        return aggregators.stream().map(
-                aggregator -> aggregator.generateSelection(cb, root)).collect(toList());
+    private List<Selection<?>> generateMultiSelections(CriteriaBuilder cb, Root<T> root) {
+        List<Selection<?>> selections = new ArrayList<>();
+        selections.add(root.get(groupByField).alias(groupByField));
+        selections.addAll(aggregators.stream().map(
+            aggregator -> aggregator.generateSelection(cb, root)).collect(toList()));
+        return selections;
     }
 
     private class GroupByAggregator implements AliasAssigner<GroupByBuilder> {
