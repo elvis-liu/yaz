@@ -8,15 +8,18 @@ import com.exmertec.yaz.core.GroupByBuilder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Tuple;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
@@ -67,6 +70,15 @@ public class CoreGroupByBuilder<T> implements GroupByBuilder {
 
     @Override
     public List<Tuple> queryList() {
+        return doTupleQueryList(null);
+    }
+
+    @Override
+    public List<Tuple> queryPage(int pageSize, int pageIndex) {
+        return doTupleQueryList(query -> query.setMaxResults(pageSize).setFirstResult(pageIndex));
+    }
+
+    private List<Tuple> doTupleQueryList(Consumer<TypedQuery<Tuple>> queryManipulator) {
         EntityManager entityManager = criteriaQueryGenerator.getEntityManager();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tuple> tupleQuery = criteriaBuilder.createTupleQuery();
@@ -78,8 +90,15 @@ public class CoreGroupByBuilder<T> implements GroupByBuilder {
         tupleQuery.where(criteriaQueryGenerator.generateRestrictions(tupleQuery, criteriaQueryGenerator.getQueries()));
         tupleQuery.orderBy(getOrders(criteriaBuilder, root));
 
-        return entityManager.createQuery(tupleQuery).getResultList();
+        TypedQuery<Tuple> query = entityManager.createQuery(tupleQuery);
+
+        if (queryManipulator != null) {
+            queryManipulator.accept(query);
+        }
+
+        return query.getResultList();
     }
+
 
     private List<Order> getOrders(CriteriaBuilder criteriaBuilder, Root<T> root) {
         Stream<Order> fieldOrderStream = criteriaQueryGenerator.getOrderByRules().stream()

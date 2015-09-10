@@ -2,6 +2,7 @@ package com.exmertec.yaz.builder;
 
 import static java.util.stream.Collectors.toList;
 
+
 import com.exmertec.yaz.core.Query;
 
 import java.util.Collection;
@@ -13,7 +14,6 @@ import java.util.function.Function;
 
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
-import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -69,8 +69,8 @@ interface CriteriaQueryGenerator<T> {
 
         if (!getOrderByRules().isEmpty()) {
             criteria.orderBy(getOrderByRules().stream()
-                                 .map(rule -> rule.getOrder(criteriaBuilder, entity))
-                                 .collect(toList()));
+                    .map(rule -> rule.getOrder(criteriaBuilder, entity))
+                    .collect(toList()));
         }
     }
 

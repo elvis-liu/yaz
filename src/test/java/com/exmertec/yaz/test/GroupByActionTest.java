@@ -235,4 +235,26 @@ public class GroupByActionTest extends TestBase {
         assertThat(results.get(2).get("minPoints")).isEqualTo(1);
         assertThat(results.get(2).get("name")).isEqualTo("c");
     }
+
+    @Test
+    public void should_support_group_by_and_query_page() throws Exception {
+        buildUser().name("c").points(1).save();
+        buildUser().name("a").points(5).save();
+        buildUser().name("c").points(2).save();
+        buildUser().name("b").points(6).save();
+        buildUser().name("c").points(3).save();
+        buildUser().name("a").points(4).save();
+
+        List<Tuple> results = new UserDao().where()
+                .groupBy("name")
+                .min("points").as("minPoints")
+                .descendingByAlias("minPoints")
+                .queryPage(2, 0);
+
+        assertThat(results.size()).isEqualTo(2);
+        assertThat(results.get(0).get("minPoints")).isEqualTo(6);
+        assertThat(results.get(0).get("name")).isEqualTo("b");
+        assertThat(results.get(1).get("minPoints")).isEqualTo(4);
+        assertThat(results.get(1).get("name")).isEqualTo("a");
+    }
 }
