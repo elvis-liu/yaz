@@ -7,6 +7,8 @@ import javax.persistence.Tuple;
 public interface GroupByBuilder {
     AliasAssigner<GroupByBuilder> count(String field);
 
+    AliasAssigner<GroupByBuilder> distinctCount(String field);
+
     AliasAssigner<GroupByBuilder> sum(String field);
 
     AliasAssigner<GroupByBuilder> avg(String field);

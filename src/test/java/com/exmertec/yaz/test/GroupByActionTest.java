@@ -257,4 +257,25 @@ public class GroupByActionTest extends TestBase {
         assertThat(results.get(1).get("minPoints")).isEqualTo(4);
         assertThat(results.get(1).get("name")).isEqualTo("a");
     }
+
+    @Test
+    public void should_support_distinct_count_with_group_by() throws Exception {
+        buildUser().name("c").type(UserType.NORMAL).points(1).save();
+        buildUser().name("c").type(UserType.NORMAL).points(5).save();
+        buildUser().name("c").type(UserType.NORMAL).points(2).save();
+        buildUser().name("a").type(UserType.VIP).points(6).save();
+        buildUser().name("a").type(UserType.NORMAL).points(3).save();
+
+        List<Tuple> results = new UserDao().where()
+                .groupBy("name")
+                .distinctCount("type").as("typeCount")
+                .descendingByAlias("typeCount")
+                .queryList();
+
+        assertThat(results.size()).isEqualTo(2);
+        assertThat(results.get(0).get("name", String.class)).isEqualTo("a");
+        assertThat(results.get(0).get("typeCount", Long.class)).isEqualTo(2);
+        assertThat(results.get(1).get("name", String.class)).isEqualTo("c");
+        assertThat(results.get(1).get("typeCount", Long.class)).isEqualTo(1);
+    }
 }
