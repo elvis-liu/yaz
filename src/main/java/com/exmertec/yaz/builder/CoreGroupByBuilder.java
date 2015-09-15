@@ -2,6 +2,7 @@ package com.exmertec.yaz.builder;
 
 import static java.util.stream.Collectors.toList;
 
+
 import com.exmertec.yaz.core.AliasAssigner;
 import com.exmertec.yaz.core.GroupByBuilder;
 
@@ -19,7 +20,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
@@ -39,6 +39,11 @@ public class CoreGroupByBuilder<T> implements GroupByBuilder {
     @Override
     public AliasAssigner<GroupByBuilder> count(String targetField) {
         return addAggregator(targetField, CriteriaBuilder::count);
+    }
+
+    @Override
+    public AliasAssigner<GroupByBuilder> distinctCount(String targetField) {
+        return addAggregator(targetField, CriteriaBuilder::countDistinct);
     }
 
     @Override
