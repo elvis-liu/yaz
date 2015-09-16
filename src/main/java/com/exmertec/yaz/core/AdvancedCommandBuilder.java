@@ -22,6 +22,8 @@ public interface AdvancedCommandBuilder<T> extends BasicCommandBuilder<T> {
 
     List<T> queryList();
 
+    List<T> queryList(int startIndex, int size);
+
     // queries
     AdvancedCommandBuilder<T> where(Query... queries);
 

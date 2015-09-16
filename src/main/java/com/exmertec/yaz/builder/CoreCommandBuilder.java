@@ -99,6 +99,18 @@ public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T>, Criteri
     }
 
     @Override
+    public List<T> queryList(int startIndex, int size) {
+        List<T> resultList = doQueryList(query -> query.setMaxResults(size).setFirstResult(startIndex));
+
+        if (resultList.isEmpty()) {
+            LOG.info(String.format("Failed to find entity of %s, of list (%d, %d)",
+                                   prototype.getName(), size, startIndex));
+        }
+
+        return resultList;
+    }
+
+    @Override
     public T querySingle() {
         List<T> resultList = doQueryList(query -> query.setMaxResults(2));
 

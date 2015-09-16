@@ -98,6 +98,21 @@ public class CoreSelectionBuilder<T> implements SelectionBuilder {
     }
 
     @Override
+    public <T> List<T> queryList(Class<T> targetType, int startIndex, int size) {
+        List<T> resultList = criteriaQueryGenerator.doQueryListWithSelect(fieldName, targetType,
+                                                                          query -> query.setMaxResults(size)
+                                                                              .setFirstResult(startIndex),
+                                                                          false);
+
+        if (resultList.isEmpty()) {
+            LOG.info(String.format("Failed to find entity of %s, of list (%d, %d)",
+                                   criteriaQueryGenerator.getProtoType().getName(), size, startIndex));
+        }
+
+        return resultList;
+    }
+
+    @Override
     public <T> List<T> queryPage(Class<T> targetType, int pageSize, int pageIndex) {
         List<T> resultList = criteriaQueryGenerator.doQueryListWithSelect(fieldName, targetType,
                                                                           query -> query.setMaxResults(pageSize)

@@ -163,4 +163,16 @@ public class SimpleQueryTest extends TestBase {
         assertThat(result.size()).isEqualTo(1);
         assertThat(result.get(0).getName()).isEqualTo("b");
     }
+
+    @Test
+    public void should_query_list_with_index() throws Exception {
+        prepareUser("a");
+        prepareUser("b");
+        prepareUser("c");
+
+        List<User> result = new UserDao().where().ascendingBy("name").queryList(1, 2);
+        assertThat(result.size()).isEqualTo(2);
+        assertThat(result.get(0).getName()).isEqualTo("b");
+        assertThat(result.get(1).getName()).isEqualTo("c");
+    }
 }

@@ -19,5 +19,7 @@ public interface SelectionBuilder {
 
     <T> List<T> queryList(Class<T> targetType);
 
+    <T> List<T> queryList(Class<T> targetType, int startIndex, int size);
+
     <T> List<T> queryPage(Class<T> targetType, int pageSize, int pageIndex);
 }

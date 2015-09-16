@@ -79,6 +79,11 @@ public class CoreGroupByBuilder<T> implements GroupByBuilder {
     }
 
     @Override
+    public List<Tuple> queryList(int startIndex, int size) {
+        return doTupleQueryList(query -> query.setMaxResults(size).setFirstResult(startIndex));
+    }
+
+    @Override
     public List<Tuple> queryPage(int pageSize, int pageIndex) {
         return doTupleQueryList(query -> query.setMaxResults(pageSize).setFirstResult(pageIndex));
     }

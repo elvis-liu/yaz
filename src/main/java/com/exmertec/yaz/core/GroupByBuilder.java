@@ -19,6 +19,8 @@ public interface GroupByBuilder {
 
     List<Tuple> queryList();
 
+    List<Tuple> queryList(int startIndex, int size);
+
     List<Tuple> queryPage(int pageSize, int pageIndex);
 
     GroupByBuilder ascendingByAlias(String alias);
