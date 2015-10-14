@@ -259,6 +259,26 @@ public class GroupByActionTest extends TestBase {
     }
 
     @Test
+    public void should_support_group_by_and_query_page_with_index_and_size() throws Exception {
+        buildUser().name("c").points(1).save();
+        buildUser().name("a").points(5).save();
+        buildUser().name("c").points(2).save();
+        buildUser().name("b").points(7).save();
+        buildUser().name("c").points(3).save();
+        buildUser().name("a").points(4).save();
+
+        List<Tuple> results = new UserDao().where()
+            .groupBy("name")
+            .sum("points").as("totalPoints")
+            .descendingByAlias("totalPoints")
+            .queryPage(2, 1);
+
+        assertThat(results.size()).isEqualTo(1);
+        assertThat(results.get(0).get("totalPoints")).isEqualTo(6L);
+        assertThat(results.get(0).get("name")).isEqualTo("c");
+    }
+
+    @Test
     public void should_support_distinct_count_with_group_by() throws Exception {
         buildUser().name("c").type(UserType.NORMAL).points(1).save();
         buildUser().name("c").type(UserType.NORMAL).points(5).save();
