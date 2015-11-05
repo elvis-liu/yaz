@@ -11,6 +11,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -70,6 +72,11 @@ public abstract class TestBase {
             orderDao.save(order);
 
             return order.getId();
+        }
+
+        public OrderBuilder timeCreated(Date time) {
+            order.setTimeCreated(time);
+            return this;
         }
     }
 
