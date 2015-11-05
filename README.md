@@ -51,7 +51,7 @@ public abstract class BaseDaoWrapper<T> extends BaseDao<T> {
     }
 }
 
-public class UserDao extends BaseDao<User> {
+public class UserDao extends BaseDaoWrapper<User> {
     public UserDao() {
         super(User.class);
     }
@@ -65,7 +65,7 @@ public class UserDao extends BaseDao<User> {
 Or if you're trying to use DDD repository pattern:
 
 ```java
-public class UserDao extends BaseDao<User> {
+public class UserDao extends BaseDaoWrapper<User> {
     public UserDao() {
         super(User.class);
     }
