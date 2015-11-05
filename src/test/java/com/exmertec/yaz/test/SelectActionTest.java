@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 public class SelectActionTest extends TestBase {
@@ -106,5 +108,25 @@ public class SelectActionTest extends TestBase {
         String name = new UserDao().where().ascendingBy("name").select("name").queryFirst(String.class);
 
         assertThat(name).isEqualTo("a");
+    }
+
+    @Test
+    public void should_query_earliest_date() throws Exception {
+        buildOrder().timeCreated(Date.from(Instant.ofEpochSecond(1000))).save();
+        buildOrder().timeCreated(Date.from(Instant.ofEpochSecond(2000))).save();
+        buildOrder().timeCreated(Date.from(Instant.ofEpochSecond(3000))).save();
+
+        Date time = new OrderDao().where().select("timeCreated").minComparable(Date.class);
+        assertThat(time.toInstant().getEpochSecond()).isEqualTo(1000);
+    }
+
+    @Test
+    public void should_query_latest_date() throws Exception {
+        buildOrder().timeCreated(Date.from(Instant.ofEpochSecond(1000))).save();
+        buildOrder().timeCreated(Date.from(Instant.ofEpochSecond(2000))).save();
+        buildOrder().timeCreated(Date.from(Instant.ofEpochSecond(3000))).save();
+
+        Date time = new OrderDao().where().select("timeCreated").maxComparable(Date.class);
+        assertThat(time.toInstant().getEpochSecond()).isEqualTo(3000);
     }
 }

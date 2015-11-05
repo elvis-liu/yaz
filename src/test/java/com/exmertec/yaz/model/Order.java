@@ -1,5 +1,7 @@
 package com.exmertec.yaz.model;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,6 +21,9 @@ public class Order {
 
     @Column(name = "amount")
     private Double amount;
+
+    @Column(name = "time_created")
+    private Date timeCreated;
 
     public Long getId() {
         return id;
@@ -42,5 +47,13 @@ public class Order {
 
     public void setAmount(Double amount) {
         this.amount = amount;
+    }
+
+    public Date getTimeCreated() {
+        return timeCreated;
+    }
+
+    public void setTimeCreated(Date timeCreated) {
+        this.timeCreated = timeCreated;
     }
 }

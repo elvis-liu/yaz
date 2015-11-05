@@ -55,6 +55,20 @@ public class CoreSelectionBuilder<T> implements SelectionBuilder {
     }
 
     @Override
+    public <X extends Comparable<? super X>> X maxComparable(Class<X> targetType) {
+        return criteriaQueryGenerator.doQuerySingleForType(targetType,
+                                                           root -> getCriteriaBuilder().greatest(
+                                                               root.<X>get(fieldName)));
+    }
+
+    @Override
+    public <X extends Comparable<? super X>> X minComparable(Class<X> targetType) {
+        return criteriaQueryGenerator.doQuerySingleForType(targetType,
+                                                           root -> getCriteriaBuilder().least(
+                                                               root.<X>get(fieldName)));
+    }
+
+    @Override
     public <T> T querySingle(Class<T> targetType) {
         List<T> resultList = criteriaQueryGenerator.doQueryListWithSelect(fieldName, targetType,
                                                                           query -> query.setMaxResults(2), false);
@@ -66,7 +80,7 @@ public class CoreSelectionBuilder<T> implements SelectionBuilder {
             return null;
         } else if (resultList.size() > 1) {
             LOG.warn("Find more than one result with single query of "
-                         + criteriaQueryGenerator.getProtoType().getName());
+                     + criteriaQueryGenerator.getProtoType().getName());
             throw new IllegalStateException();
         } else {
             return resultList.get(0);

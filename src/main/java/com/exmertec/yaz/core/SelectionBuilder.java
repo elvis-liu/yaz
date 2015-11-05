@@ -13,6 +13,10 @@ public interface SelectionBuilder {
 
     <T extends Number> T sum(Class<T> targetType);
 
+    <T extends Comparable<? super T>> T maxComparable(Class<T> targetType);
+
+    <T extends Comparable<? super T>> T minComparable(Class<T> targetType);
+
     <T> T querySingle(Class<T> targetType);
 
     <T> T queryFirst(Class<T> targetType);
