@@ -2,16 +2,7 @@ package com.exmertec.yaz.builder;
 
 import com.exmertec.yaz.core.Query;
 import com.exmertec.yaz.core.QueryBuilder;
-import com.exmertec.yaz.query.ComparableBetweenQuery;
-import com.exmertec.yaz.query.ComparableCompareQuery;
-import com.exmertec.yaz.query.EmptyQuery;
-import com.exmertec.yaz.query.EqualQuery;
-import com.exmertec.yaz.query.InQuery;
-import com.exmertec.yaz.query.LikeQuery;
-import com.exmertec.yaz.query.NeverMatchQuery;
-import com.exmertec.yaz.query.NinQuery;
-import com.exmertec.yaz.query.NotEqualQuery;
-import com.exmertec.yaz.query.NumberCompareQuery;
+import com.exmertec.yaz.query.*;
 
 import java.util.Collection;
 
@@ -35,8 +26,13 @@ public class FieldQueryBuilder implements QueryBuilder {
     }
 
     @Override
+    public Query fullFuzzyLike(String value) {
+        return new LikeQuery(fieldName, value, true);
+    }
+
+    @Override
     public Query like(String value) {
-        return new LikeQuery(fieldName, value);
+        return new LikeQuery(fieldName, value, false);
     }
 
     @Override
