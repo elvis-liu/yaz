@@ -1,15 +1,21 @@
 package com.exmertec.yaz.test;
 
+import static com.exmertec.yaz.BaseDao.and;
+import static com.exmertec.yaz.BaseDao.field;
+import static com.exmertec.yaz.BaseDao.or;
+import static com.exmertec.yaz.BaseDao.subquery;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.exmertec.yaz.model.Order;
 import com.exmertec.yaz.model.User;
+
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.exmertec.yaz.BaseDao.*;
-import static org.assertj.core.api.Assertions.assertThat;
+
 
 public class SimpleQueryTest extends TestBase {
     @Test
