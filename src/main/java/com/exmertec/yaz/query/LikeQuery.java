@@ -31,7 +31,6 @@ public class LikeQuery extends ComplexQueryBase<String> {
             }
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
-//            never going to use.
             throw new IllegalArgumentException(
                     String.format(
                             "Unable to locate field with the the given name [%s] on this ManagedType [%s]",

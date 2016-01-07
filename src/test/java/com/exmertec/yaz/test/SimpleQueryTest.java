@@ -49,7 +49,8 @@ public class SimpleQueryTest extends TestBase {
 
     @Test(expected = IllegalArgumentException.class)
     public void should_throw_illegal_argument_exception() throws Exception {
-        new UserDao().where(field("xxx").eq("fdas")).queryList();
+        new UserDao().where(field("xxx").likeLiterally("fdas")).queryList();
+        new UserDao().where(field("xxx").like("fdas")).queryList();
     }
 
     @Test
