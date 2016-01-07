@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-
-
 public class SimpleQueryTest extends TestBase {
     @Test
     public void should_query_by_id() throws Exception {
@@ -33,7 +31,7 @@ public class SimpleQueryTest extends TestBase {
         final String userName = "name";
         prepareUser(userName);
 
-        List<User> result = new UserDao().where(field("name").fullFuzzyLike(userName.substring(1))).queryList();
+        List<User> result = new UserDao().where(field("name").like(userName.substring(1))).queryList();
 
         assertThat(result.size()).isEqualTo(1);
         assertThat(result.get(0).getName()).isEqualTo(userName);
@@ -42,9 +40,11 @@ public class SimpleQueryTest extends TestBase {
     @Test
     public void should_query_when_like_number() throws Exception {
         new UserBuilder().name("abc").points(1000).save();
-        User user = new UserDao().where(field("points").fullFuzzyLike("100_")).querySingle();
+        new UserBuilder().name("abcd").points(21000).save();
+        User user = new UserDao().where(field("points").noFuzzyLike("100_")).querySingle();
         assertThat(user.getName()).isEqualTo("abc");
-
+        List<User> users = new UserDao().where(field("points").noFuzzyLike("1%")).queryList();
+        assertThat(users.size()).isEqualTo(1);
     }
 
     @Test
@@ -53,7 +53,7 @@ public class SimpleQueryTest extends TestBase {
         final String notLike = "not_like";
         prepareUser(userName);
 
-        List<User> result = new UserDao().where(field("name").fullFuzzyLike(notLike)).queryList();
+        List<User> result = new UserDao().where(field("name").like(notLike)).queryList();
 
         assertThat(result.size()).isEqualTo(0);
     }
@@ -126,7 +126,7 @@ public class SimpleQueryTest extends TestBase {
         prepareUser("aaa");
         prepareUser("bbb");
 
-        List<User> result = new UserDao().where(and(field("name").fullFuzzyLike("a"), field("name").fullFuzzyLike("ab"))).queryList();
+        List<User> result = new UserDao().where(and(field("name").like("a"), field("name").like("ab"))).queryList();
 
         assertThat(result.size()).isEqualTo(1);
         assertThat(result.get(0).getName()).isEqualTo("abc");
@@ -138,7 +138,7 @@ public class SimpleQueryTest extends TestBase {
         prepareUser("aaa");
         prepareUser("bbb");
 
-        List<User> result = new UserDao().where(or(field("name").fullFuzzyLike("ab"), field("name").fullFuzzyLike("aa")))
+        List<User> result = new UserDao().where(or(field("name").like("ab"), field("name").like("aa")))
                 .ascendingBy("name")
                 .queryList();
 

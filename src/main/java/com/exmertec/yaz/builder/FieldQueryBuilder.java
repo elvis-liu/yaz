@@ -35,12 +35,12 @@ public class FieldQueryBuilder implements QueryBuilder {
     }
 
     @Override
-    public Query fullFuzzyLike(String value) {
+    public Query like(String value) {
         return new LikeQuery(fieldName, value, true);
     }
 
     @Override
-    public Query like(String value) {
+    public Query noFuzzyLike(String value) {
         return new LikeQuery(fieldName, value, false);
     }
 

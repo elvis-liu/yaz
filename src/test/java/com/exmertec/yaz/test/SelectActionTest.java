@@ -16,7 +16,7 @@ public class SelectActionTest extends TestBase {
         prepareUser("a");
         prepareUser("b");
 
-        Long count = new UserDao().where(field("name").fullFuzzyLike("a")).select("name").distinctCount();
+        Long count = new UserDao().where(field("name").like("a")).select("name").distinctCount();
 
         assertThat(count).isEqualTo(1);
     }

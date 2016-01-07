@@ -16,7 +16,7 @@ public class SimpleActionTest extends TestBase {
         prepareUser("ab");
         prepareUser("b");
 
-        Long count = new UserDao().where(field("name").fullFuzzyLike("a")).count();
+        Long count = new UserDao().where(field("name").like("a")).count();
 
         assertThat(count).isEqualTo(2);
     }
@@ -30,7 +30,7 @@ public class SimpleActionTest extends TestBase {
         prepareUser("s1");
         prepareUser("s2");
 
-        List<User> result = new UserDao().where(field("name").fullFuzzyLike("n")).queryPage(2, 1);
+        List<User> result = new UserDao().where(field("name").like("n")).queryPage(2, 1);
 
         assertThat(result.size()).isEqualTo(2);
         assertThat(result.get(0).getName()).startsWith("n");
@@ -53,7 +53,7 @@ public class SimpleActionTest extends TestBase {
         prepareUser("n1");
         prepareUser("n2");
 
-        new UserDao().where(field("name").fullFuzzyLike("n")).querySingle();
+        new UserDao().where(field("name").like("n")).querySingle();
     }
 
     @Test

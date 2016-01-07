@@ -7,9 +7,9 @@ public interface QueryBuilder {
 
     Query ne(Object value);
 
-    Query fullFuzzyLike(String value);
-
     Query like(String value);
+
+    Query noFuzzyLike(String value);
 
     Query in(Object... values);
 
