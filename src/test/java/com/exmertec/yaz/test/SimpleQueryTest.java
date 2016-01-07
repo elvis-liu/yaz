@@ -47,6 +47,11 @@ public class SimpleQueryTest extends TestBase {
         assertThat(users.size()).isEqualTo(1);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void should_throw_illegal_argument_exception() throws Exception {
+        new UserDao().where(field("xxx").eq("fdas")).queryList();
+    }
+
     @Test
     public void should_query_when_not_like() throws Exception {
         final String userName = "name";
