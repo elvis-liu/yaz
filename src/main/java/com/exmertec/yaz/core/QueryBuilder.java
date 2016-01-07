@@ -9,6 +9,8 @@ public interface QueryBuilder {
 
     Query like(String value);
 
+    Query likeLiterally(String value);
+
     Query in(Object... values);
 
     <T> Query in(Collection<T> values);

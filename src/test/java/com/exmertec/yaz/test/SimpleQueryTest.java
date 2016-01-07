@@ -38,6 +38,22 @@ public class SimpleQueryTest extends TestBase {
     }
 
     @Test
+    public void should_query_when_like_number() throws Exception {
+        new UserBuilder().name("abc").points(1000).save();
+        new UserBuilder().name("abcd").points(21000).save();
+        User user = new UserDao().where(field("points").likeLiterally("100_")).querySingle();
+        assertThat(user.getName()).isEqualTo("abc");
+        List<User> users = new UserDao().where(field("points").likeLiterally("1%")).queryList();
+        assertThat(users.size()).isEqualTo(1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void should_throw_illegal_argument_exception() throws Exception {
+        new UserDao().where(field("xxx").likeLiterally("fdas")).queryList();
+        new UserDao().where(field("xxx").like("fdas")).queryList();
+    }
+
+    @Test
     public void should_query_when_not_like() throws Exception {
         final String userName = "name";
         final String notLike = "not_like";
@@ -129,8 +145,8 @@ public class SimpleQueryTest extends TestBase {
         prepareUser("bbb");
 
         List<User> result = new UserDao().where(or(field("name").like("ab"), field("name").like("aa")))
-            .ascendingBy("name")
-            .queryList();
+                .ascendingBy("name")
+                .queryList();
 
         assertThat(result.size()).isEqualTo(2);
         assertThat(result.get(0).getName()).isEqualTo("aaa");
@@ -143,8 +159,8 @@ public class SimpleQueryTest extends TestBase {
         prepareUser("b");
 
         List<User> result = new UserDao().where(
-            field("name").eq("a").when(false), // ignore query
-            field("name").eq("b").when(true) // effective query
+                field("name").eq("a").when(false), // ignore query
+                field("name").eq("b").when(true) // effective query
         ).queryList();
 
         assertThat(result.size()).isEqualTo(1);
