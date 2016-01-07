@@ -11,8 +11,8 @@ import javax.persistence.criteria.Root;
 
 public class LikeQuery extends ComplexQueryBase<String> {
 
-    public final static Boolean LITERALLY = true;
-    public final static Boolean NOT_LITERALLY = false;
+    public static final Boolean LITERALLY = true;
+    public static final Boolean NOT_LITERALLY = false;
 
     private boolean isLiterally;
 
