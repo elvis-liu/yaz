@@ -41,9 +41,9 @@ public class SimpleQueryTest extends TestBase {
     public void should_query_when_like_number() throws Exception {
         new UserBuilder().name("abc").points(1000).save();
         new UserBuilder().name("abcd").points(21000).save();
-        User user = new UserDao().where(field("points").noFuzzyLike("100_")).querySingle();
+        User user = new UserDao().where(field("points").likeLiterally("100_")).querySingle();
         assertThat(user.getName()).isEqualTo("abc");
-        List<User> users = new UserDao().where(field("points").noFuzzyLike("1%")).queryList();
+        List<User> users = new UserDao().where(field("points").likeLiterally("1%")).queryList();
         assertThat(users.size()).isEqualTo(1);
     }
 

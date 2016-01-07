@@ -40,7 +40,7 @@ public class FieldQueryBuilder implements QueryBuilder {
     }
 
     @Override
-    public Query noFuzzyLike(String value) {
+    public Query likeLiterally(String value) {
         return new LikeQuery(fieldName, value, false);
     }
 

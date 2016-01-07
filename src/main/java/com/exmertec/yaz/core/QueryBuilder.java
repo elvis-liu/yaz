@@ -9,7 +9,7 @@ public interface QueryBuilder {
 
     Query like(String value);
 
-    Query noFuzzyLike(String value);
+    Query likeLiterally(String value);
 
     Query in(Object... values);
 
