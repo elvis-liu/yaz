@@ -36,12 +36,12 @@ public class FieldQueryBuilder implements QueryBuilder {
 
     @Override
     public Query like(String value) {
-        return new LikeQuery(fieldName, value, true);
+        return new LikeQuery(fieldName, value, LikeQuery.NOT_LITERALLY);
     }
 
     @Override
     public Query likeLiterally(String value) {
-        return new LikeQuery(fieldName, value, false);
+        return new LikeQuery(fieldName, value, LikeQuery.LITERALLY);
     }
 
     @Override

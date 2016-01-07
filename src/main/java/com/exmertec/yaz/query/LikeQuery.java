@@ -11,11 +11,14 @@ import javax.persistence.criteria.Root;
 
 public class LikeQuery extends ComplexQueryBase<String> {
 
-    private boolean isFullFuzzy ;
+    public final static Boolean LITERALLY = true;
+    public final static Boolean NOT_LITERALLY = false;
 
-    public LikeQuery(String field, String value, Boolean isFullFuzzy) {
+    private boolean isLiterally;
+
+    public LikeQuery(String field, String value, Boolean isLiterally) {
         super(field, value);
-        this.isFullFuzzy = isFullFuzzy;
+        this.isLiterally = isLiterally;
     }
 
     @Override
@@ -34,10 +37,10 @@ public class LikeQuery extends ComplexQueryBase<String> {
 
     @Override
     protected Expression<String> valueToExpress(CriteriaBuilder criteriaBuilder, String input) {
-        if (isFullFuzzy) {
-            return super.valueToExpress(criteriaBuilder, "%" + input + "%");
-        } else {
+        if (isLiterally) {
             return super.valueToExpress(criteriaBuilder, input);
+        } else {
+            return super.valueToExpress(criteriaBuilder, "%" + input + "%");
         }
     }
 }
