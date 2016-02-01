@@ -36,6 +36,40 @@ ext.getPropertyIfExists = { propertyName ->
     }
 }
 
+def pomContent = {
+    name 'yaz'
+    packaging 'jar'
+    // optionally artifactId can be defined here
+    description 'Yet Another Zeratul is an upgraded version of Zeratul, which is a Java library wraps the JPA interfaces, to provide more convenient data accessing.'
+    url 'https://github.com/elvis-liu/yaz'
+
+    scm {
+        connection 'scm:git:https://github.com/elvis-liu/yaz.git'
+        developerConnection 'scm:git:https://github.com/elvis-liu/yaz.git'
+        url 'https://github.com/elvis-liu/yaz.git'
+    }
+
+    licenses {
+        license {
+            name 'The Apache License, Version 2.0'
+            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+        }
+    }
+
+    developers {
+        developer {
+            id 'elvis-liu'
+            name 'Yufeng Liu'
+            email 'elvisliu.cs@gmail.com'
+        }
+        developer {
+            id 'yeyuexia'
+            name 'Zhuo Liu'
+            email 'yyxworld@gmail.com'
+        }
+    }
+}
+
 uploadArchives {
     repositories {
         mavenDeployer {
@@ -49,39 +83,25 @@ uploadArchives {
                 authentication(userName: getPropertyIfExists("ossrhUsername"), password: getPropertyIfExists("ossrhPassword"))
             }
 
-            pom.project {
-                name 'yaz'
-                packaging 'jar'
-                // optionally artifactId can be defined here
-                description 'Yet Another Zeratul is an upgraded version of Zeratul, which is a Java library wraps the JPA interfaces, to provide more convenient data accessing.'
-                url 'https://github.com/elvis-liu/yaz'
+            pom.project(pomContent)
+        }
+    }
+}
 
-                scm {
-                    connection 'scm:git:https://github.com/elvis-liu/yaz.git'
-                    developerConnection 'scm:git:https://github.com/elvis-liu/yaz.git'
-                    url 'https://github.com/elvis-liu/yaz.git'
-                }
-
-                licenses {
-                    license {
-                        name 'The Apache License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-
-                developers {
-                    developer {
-                        id 'elvis-liu'
-                        name 'Yufeng Liu'
-                        email 'elvisliu.cs@gmail.com'
-                    }
-                    developer {
-                        id 'yeyuexia'
-                        name 'Zhuo Liu'
-                        email 'yyxworld@gmail.com'
-                    }
-                }
+task uploadInternal(type: Upload) {
+    configuration = configurations.archives
+    uploadDescriptor = true
+    repositories {
+        mavenDeployer {
+            repository(url: "http://10.202.128.43:9010/repository/maven-releases/") {
+                authentication(userName: 'twer', password: 'twer')
             }
+
+            snapshotRepository(url: "http://10.202.128.43:9010/repository/maven-snapshots/") {
+                authentication(userName: 'twer', password: 'twer')
+            }
+
+            pom.project(pomContent)
         }
     }
 }
