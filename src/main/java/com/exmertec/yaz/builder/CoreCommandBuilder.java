@@ -19,7 +19,7 @@ import javax.persistence.LockModeType;
 import javax.persistence.criteria.CriteriaBuilder;
 
 public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T>, CriteriaQueryGenerator<T> {
-    private static final Logger LOG = Logger.getLogger(CoreCommandBuilder.class);
+    private static final Logger LOGGGER = Logger.getLogger(CoreCommandBuilder.class);
 
     private final EntityManager entityManager;
     private final Class<T> prototype;
@@ -68,7 +68,7 @@ public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T>, Criteri
         List<T> resultList = doQueryList(query -> query.setMaxResults(1));
 
         if (resultList.isEmpty()) {
-            LOG.info("Failed to get first result of " + prototype.getName());
+            LOGGGER.info("Failed to get first result of " + prototype.getName());
             return null;
         } else {
             return resultList.get(0);
@@ -80,7 +80,7 @@ public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T>, Criteri
         List<T> resultList = doQueryList(query -> query.setMaxResults(pageSize).setFirstResult(pageIndex * pageSize));
 
         if (resultList.isEmpty()) {
-            LOG.info(String.format("Failed to find entity of %s, of page (%d, %d)",
+            LOGGGER.info(String.format("Failed to find entity of %s, of page (%d, %d)",
                                    prototype.getName(), pageSize, pageIndex));
         }
 
@@ -92,7 +92,7 @@ public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T>, Criteri
         List<T> resultList = doQueryList(null);
 
         if (resultList.isEmpty()) {
-            LOG.info("Failed to find any result of " + prototype.getName());
+            LOGGGER.info("Failed to find any result of " + prototype.getName());
         }
 
         return resultList;
@@ -103,7 +103,7 @@ public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T>, Criteri
         List<T> resultList = doQueryList(query -> query.setMaxResults(size).setFirstResult(startIndex));
 
         if (resultList.isEmpty()) {
-            LOG.info(String.format("Failed to find entity of %s, of list (%d, %d)",
+            LOGGGER.info(String.format("Failed to find entity of %s, of list (%d, %d)",
                                    prototype.getName(), size, startIndex));
         }
 
@@ -115,10 +115,10 @@ public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T>, Criteri
         List<T> resultList = doQueryList(query -> query.setMaxResults(2));
 
         if (resultList.isEmpty()) {
-            LOG.info("Failed to get single result of " + prototype.getName());
+            LOGGGER.info("Failed to get single result of " + prototype.getName());
             return null;
         } else if (resultList.size() > 1) {
-            LOG.warn("Find more than one result with single query of " + prototype.getName());
+            LOGGGER.warn("Find more than one result with single query of " + prototype.getName());
             throw new IllegalStateException();
         } else {
             return resultList.get(0);

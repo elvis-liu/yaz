@@ -9,7 +9,7 @@ import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 
 public class CoreDistinctSelectionBuilder<T> implements DistinctSelectionBuilder {
-    private static final Logger LOG = Logger.getLogger(CoreDistinctSelectionBuilder.class);
+    private static final Logger LOGGER = Logger.getLogger(CoreDistinctSelectionBuilder.class);
 
     private final CriteriaQueryGenerator<T> criteriaQueryGenerator;
     private final String fieldName;
@@ -33,12 +33,12 @@ public class CoreDistinctSelectionBuilder<T> implements DistinctSelectionBuilder
                                                                           query -> query.setMaxResults(2), true);
 
         if (resultList.isEmpty()) {
-            LOG.info(String.format("Failed to select single result of %s from %s",
+            LOGGER.info(String.format("Failed to select single result of %s from %s",
                                    criteriaQueryGenerator.getProtoType().getName(),
                                    fieldName));
             return null;
         } else if (resultList.size() > 1) {
-            LOG.warn("Find more than one result with single query of "
+            LOGGER.warn("Find more than one result with single query of "
                          + criteriaQueryGenerator.getProtoType().getName());
             throw new IllegalStateException();
         } else {
@@ -52,7 +52,7 @@ public class CoreDistinctSelectionBuilder<T> implements DistinctSelectionBuilder
                                                                           query -> query.setMaxResults(1), true);
 
         if (resultList.isEmpty()) {
-            LOG.info("Failed to get first result of " + criteriaQueryGenerator.getProtoType().getName());
+            LOGGER.info("Failed to get first result of " + criteriaQueryGenerator.getProtoType().getName());
             return null;
         } else {
             return resultList.get(0);
@@ -64,7 +64,7 @@ public class CoreDistinctSelectionBuilder<T> implements DistinctSelectionBuilder
         List<T> resultList = criteriaQueryGenerator.doQueryListWithSelect(fieldName, targetType, null, true);
 
         if (resultList.isEmpty()) {
-            LOG.info("Failed to find any result of " + criteriaQueryGenerator.getProtoType().getName());
+            LOGGER.info("Failed to find any result of " + criteriaQueryGenerator.getProtoType().getName());
         }
 
         return resultList;
@@ -78,7 +78,7 @@ public class CoreDistinctSelectionBuilder<T> implements DistinctSelectionBuilder
                                                                           true);
 
         if (resultList.isEmpty()) {
-            LOG.info(String.format("Failed to find entity of %s, of list (%d, %d)",
+            LOGGER.info(String.format("Failed to find entity of %s, of list (%d, %d)",
                                    criteriaQueryGenerator.getProtoType().getName(), size, startIndex));
         }
 
@@ -93,7 +93,7 @@ public class CoreDistinctSelectionBuilder<T> implements DistinctSelectionBuilder
                                                                           true);
 
         if (resultList.isEmpty()) {
-            LOG.info(String.format("Failed to find entity of %s, of page (%d, %d)",
+            LOGGER.info(String.format("Failed to find entity of %s, of page (%d, %d)",
                                    criteriaQueryGenerator.getProtoType().getName(), pageSize, pageIndex));
         }
 

@@ -11,16 +11,12 @@ import com.exmertec.yaz.expression.ExpressionGenerator;
 import com.exmertec.yaz.expression.SubqueryExpressionGenerator;
 import com.exmertec.yaz.query.BooleanQuery;
 
-import org.apache.log4j.Logger;
-
 import java.util.Collection;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 
-public abstract class BaseDao<T> {
-    private static final Logger LOG = Logger.getLogger(BaseDao.class);
-
+public class BaseDao<T> {
     protected EntityManager entityManager;
 
     private final Class<T> prototype;
