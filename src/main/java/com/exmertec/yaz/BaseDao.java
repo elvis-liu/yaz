@@ -21,7 +21,7 @@ public class BaseDao<T> {
 
     private final Class<T> prototype;
 
-    protected BaseDao(EntityManager entityManager, Class<T> prototype) {
+    public BaseDao(EntityManager entityManager, Class<T> prototype) {
         this.prototype = prototype;
         setEntityManager(entityManager);
     }
