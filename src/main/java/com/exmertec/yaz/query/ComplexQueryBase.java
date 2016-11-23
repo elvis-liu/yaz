@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.persistence.criteria.AbstractQuery;
+import javax.persistence.criteria.CommonAbstractCriteria;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
@@ -37,10 +38,10 @@ public abstract class ComplexQueryBase<T> implements Query {
         return doGenerate(criteriaBuilder, entity, field, expressions);
     }
 
-    private Expression<T> toExpression(CriteriaBuilder criteriaBuilder, AbstractQuery<?> query, T value) {
+    private Expression<T> toExpression(CriteriaBuilder criteriaBuilder, CommonAbstractCriteria criteria, T value) {
         if (value != null && ExpressionGenerator.class.isInstance(value)) {
             ExpressionGenerator expressionGenerator = ExpressionGenerator.class.cast(value);
-            return expressionGenerator.generate(criteriaBuilder, query);
+            return expressionGenerator.generate(criteriaBuilder, criteria);
         } else {
             return valueToExpress(criteriaBuilder, value);
         }
