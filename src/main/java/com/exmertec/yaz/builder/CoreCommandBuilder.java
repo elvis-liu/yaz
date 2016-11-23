@@ -7,6 +7,7 @@ import com.exmertec.yaz.core.DistinctSelectionBuilder;
 import com.exmertec.yaz.core.GroupByBuilder;
 import com.exmertec.yaz.core.Query;
 import com.exmertec.yaz.core.SelectionBuilder;
+import com.exmertec.yaz.core.UpdateCommandBuilder;
 
 import org.apache.log4j.Logger;
 
@@ -18,13 +19,16 @@ import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.criteria.CriteriaBuilder;
 
-public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T>, CriteriaQueryGenerator<T> {
+public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T>, CriteriaQueryGenerator<T>,
+    CriteriaUpdateGenerator<T> {
     private static final Logger LOGGGER = Logger.getLogger(CoreCommandBuilder.class);
 
     private final EntityManager entityManager;
     private final Class<T> prototype;
 
     private final List<Query> addedQueries = new LinkedList<>();
+
+    private final List<UpdateRule> updateRules = new LinkedList<>();
 
     private LockModeType lockModeType;
 
@@ -169,5 +173,21 @@ public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T>, Criteri
     @Override
     public EntityManager getEntityManager() {
         return entityManager;
+    }
+
+    @Override
+    public UpdateCommandBuilder update(String fieldName, Object value) {
+        updateRules.add(new UpdateRule(fieldName, value));
+        return this;
+    }
+
+    @Override
+    public int execute() {
+        return execute(true);
+    }
+
+    @Override
+    public int execute(boolean cleanCache) {
+        return doUpdate(updateRules, cleanCache);
     }
 }

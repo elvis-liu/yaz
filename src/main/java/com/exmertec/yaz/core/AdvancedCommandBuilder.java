@@ -4,7 +4,8 @@ import java.util.List;
 
 import javax.persistence.LockModeType;
 
-public interface AdvancedCommandBuilder<T> extends BasicCommandBuilder<T>, QueryCommandBuilder<T> {
+public interface AdvancedCommandBuilder<T> extends BasicCommandBuilder<T>, QueryCommandBuilder<T>,
+    UpdateCommandBuilder<T> {
     // options
     AdvancedCommandBuilder<T> ascendingBy(String... fieldNames);
 
