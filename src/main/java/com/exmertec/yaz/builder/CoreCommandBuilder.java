@@ -182,12 +182,12 @@ public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T>, Criteri
     }
 
     @Override
-    public int execute() {
-        return execute(false);
+    public int applyWithoutClearCache() {
+        return apply(false);
     }
 
     @Override
-    public int execute(boolean cleanCache) {
+    public int apply(boolean cleanCache) {
         return doUpdate(updateRules, cleanCache);
     }
 }

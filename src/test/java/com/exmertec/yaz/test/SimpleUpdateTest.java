@@ -23,7 +23,7 @@ public class SimpleUpdateTest extends TestBase {
 
 
         UserDao userDao = new UserDao();
-        assertThat(userDao.where().update("points", UPDATED_USER_POINTS).execute(true)).isEqualTo(4);
+        assertThat(userDao.where().update("points", UPDATED_USER_POINTS).apply(true)).isEqualTo(4);
         List<User> users = userDao.where().queryList();
         assertThat(users).hasSize(4);
         users.stream().forEach(user -> assertThat(user.getPoints()).isEqualTo(UPDATED_USER_POINTS));
@@ -37,7 +37,7 @@ public class SimpleUpdateTest extends TestBase {
         UserDao userDao = new UserDao();
         assertThat(userDao.where(field("name").eq("a"))
             .update("points", UPDATED_USER_POINTS)
-            .execute(true)).isEqualTo(1);
+            .apply(true)).isEqualTo(1);
         List<User> users = userDao.where(field("points").eq(DEFAULT_USER_POINTS)).queryList();
         assertThat(users).hasSize(1);
         assertThat(users.get(0).getName()).isEqualTo("b");
@@ -56,7 +56,7 @@ public class SimpleUpdateTest extends TestBase {
 
         UserDao userDao = new UserDao();
         assertThat(userDao.where().update("points", UPDATED_USER_POINTS)
-            .update("type", UserType.VIP).execute(true)).isEqualTo(4);
+            .update("type", UserType.VIP).apply(true)).isEqualTo(4);
 
         List<User> users = userDao.where().queryList();
         assertThat(users).hasSize(4);
