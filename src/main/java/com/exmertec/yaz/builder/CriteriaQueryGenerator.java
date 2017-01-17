@@ -2,20 +2,12 @@ package com.exmertec.yaz.builder;
 
 import static java.util.stream.Collectors.toList;
 
-
-import com.exmertec.yaz.core.Query;
-
-import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import javax.persistence.EntityManager;
-import javax.persistence.LockModeType;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
@@ -23,16 +15,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
-interface CriteriaQueryGenerator<T> {
-    Class<T> getProtoType();
-
-    LockModeType getLockMode();
-
+interface CriteriaQueryGenerator<T> extends CriteriaGenerator<T> {
     List<OrderByRule> getOrderByRules();
-
-    List<Query> getQueries();
-
-    EntityManager getEntityManager();
 
     default Root<T> getRoot(CriteriaQuery<?> criteriaQuery) {
         Set<Root<?>> roots = criteriaQuery.getRoots();
@@ -48,20 +32,6 @@ interface CriteriaQueryGenerator<T> {
         criteriaQuery.from(getProtoType());
 
         return criteriaQuery;
-    }
-
-    default Predicate[] generateRestrictions(AbstractQuery<?> abstractQuery, List<Query> queries) {
-        CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
-        return queries.stream()
-            .map(query -> Optional.of(query.toRestrictions(criteriaBuilder, abstractQuery)).get())
-            .flatMap(Collection::stream)
-            .toArray(Predicate[]::new);
-    }
-
-    default void addQueryOptions(TypedQuery<?> query) {
-        if (getLockMode() != null) {
-            query.setLockMode(getLockMode());
-        }
     }
 
     default void appendOrderBy(CriteriaBuilder criteriaBuilder, CriteriaQuery<?> criteria) {

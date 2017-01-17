@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.stream.StreamSupport;
 
 import javax.persistence.criteria.AbstractQuery;
+import javax.persistence.criteria.CommonAbstractCriteria;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
@@ -30,8 +31,8 @@ public class SubqueryExpressionGenerator<F, T> implements ExpressionGenerator<T>
     }
 
     @Override
-    public Expression<T> generate(CriteriaBuilder criteriaBuilder, AbstractQuery<?> query) {
-        Subquery<T> subquery = query.subquery(targetFieldType);
+    public Expression<T> generate(CriteriaBuilder criteriaBuilder, CommonAbstractCriteria criteria) {
+        Subquery<T> subquery = criteria.subquery(targetFieldType);
         Root<?> entity = subquery.from(fromType);
         Predicate[] restrictions = generateRestrictions(criteriaBuilder, subquery, byRestrictions);
         return subquery.select(entity.<T>get(targetField)).where(restrictions);

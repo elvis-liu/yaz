@@ -4,7 +4,8 @@ import java.util.List;
 
 import javax.persistence.LockModeType;
 
-public interface AdvancedCommandBuilder<T> extends BasicCommandBuilder<T> {
+public interface AdvancedCommandBuilder<T> extends BasicCommandBuilder<T>, QueryCommandBuilder<T>,
+    UpdateCommandBuilder<T> {
     // options
     AdvancedCommandBuilder<T> ascendingBy(String... fieldNames);
 
@@ -24,12 +25,7 @@ public interface AdvancedCommandBuilder<T> extends BasicCommandBuilder<T> {
 
     List<T> queryList(int startIndex, int size);
 
-    // queries
+    // query
+    @Override
     AdvancedCommandBuilder<T> where(Query... queries);
-
-    SelectionBuilder select(String fieldName);
-
-    DistinctSelectionBuilder distinctSelect(String fieldName);
-
-    GroupByBuilder groupBy(String... fieldNames);
 }
