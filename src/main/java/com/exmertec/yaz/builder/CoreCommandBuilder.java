@@ -183,7 +183,7 @@ public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T>, Criteri
 
     @Override
     public int execute() {
-        return execute(true);
+        return execute(false);
     }
 
     @Override
