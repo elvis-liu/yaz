@@ -1,10 +1,13 @@
 package com.exmertec.yaz.builder;
 
+import static com.exmertec.yaz.core.OrderType.ASCENDING;
+import static com.exmertec.yaz.core.OrderType.DESCENDING;
 import static java.util.stream.Collectors.toList;
 
 import com.exmertec.yaz.core.AdvancedCommandBuilder;
 import com.exmertec.yaz.core.DistinctSelectionBuilder;
 import com.exmertec.yaz.core.GroupByBuilder;
+import com.exmertec.yaz.core.OrderType;
 import com.exmertec.yaz.core.Query;
 import com.exmertec.yaz.core.SelectionBuilder;
 
@@ -19,7 +22,7 @@ import javax.persistence.LockModeType;
 import javax.persistence.criteria.CriteriaBuilder;
 
 public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T>, CriteriaQueryGenerator<T> {
-    private static final Logger LOGGGER = Logger.getLogger(CoreCommandBuilder.class);
+    private static final Logger LOGGER = Logger.getLogger(CoreCommandBuilder.class);
 
     private final EntityManager entityManager;
     private final Class<T> prototype;
@@ -37,17 +40,22 @@ public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T>, Criteri
 
     @Override
     public AdvancedCommandBuilder<T> ascendingBy(String... fieldNames) {
-        orderByRules.addAll(Arrays.asList(fieldNames).stream()
-                                .map(name -> new OrderByRule(true, name))
-                                .collect(toList()));
-        return this;
+        return orderBy(ASCENDING, fieldNames);
     }
 
     @Override
     public AdvancedCommandBuilder<T> descendingBy(String... fieldNames) {
+        return orderBy(DESCENDING, fieldNames);
+    }
+
+    @Override
+    public AdvancedCommandBuilder<T> orderBy(OrderType orderType, String... fieldNames) {
+        boolean isAscending = (orderType == ASCENDING);
+
         orderByRules.addAll(Arrays.asList(fieldNames).stream()
-                                .map(name -> new OrderByRule(false, name))
-                                .collect(toList()));
+            .map(name -> new OrderByRule(isAscending, name))
+            .collect(toList()));
+
         return this;
     }
 
@@ -68,7 +76,7 @@ public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T>, Criteri
         List<T> resultList = doQueryList(query -> query.setMaxResults(1));
 
         if (resultList.isEmpty()) {
-            LOGGGER.info("Failed to get first result of " + prototype.getName());
+            LOGGER.info("Failed to get first result of " + prototype.getName());
             return null;
         } else {
             return resultList.get(0);
@@ -80,7 +88,7 @@ public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T>, Criteri
         List<T> resultList = doQueryList(query -> query.setMaxResults(pageSize).setFirstResult(pageIndex * pageSize));
 
         if (resultList.isEmpty()) {
-            LOGGGER.info(String.format("Failed to find entity of %s, of page (%d, %d)",
+            LOGGER.info(String.format("Failed to find entity of %s, of page (%d, %d)",
                                    prototype.getName(), pageSize, pageIndex));
         }
 
@@ -92,7 +100,7 @@ public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T>, Criteri
         List<T> resultList = doQueryList(null);
 
         if (resultList.isEmpty()) {
-            LOGGGER.info("Failed to find any result of " + prototype.getName());
+            LOGGER.info("Failed to find any result of " + prototype.getName());
         }
 
         return resultList;
@@ -103,7 +111,7 @@ public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T>, Criteri
         List<T> resultList = doQueryList(query -> query.setMaxResults(size).setFirstResult(startIndex));
 
         if (resultList.isEmpty()) {
-            LOGGGER.info(String.format("Failed to find entity of %s, of list (%d, %d)",
+            LOGGER.info(String.format("Failed to find entity of %s, of list (%d, %d)",
                                    prototype.getName(), size, startIndex));
         }
 
@@ -115,10 +123,10 @@ public class CoreCommandBuilder<T> implements AdvancedCommandBuilder<T>, Criteri
         List<T> resultList = doQueryList(query -> query.setMaxResults(2));
 
         if (resultList.isEmpty()) {
-            LOGGGER.info("Failed to get single result of " + prototype.getName());
+            LOGGER.info("Failed to get single result of " + prototype.getName());
             return null;
         } else if (resultList.size() > 1) {
-            LOGGGER.warn("Find more than one result with single query of " + prototype.getName());
+            LOGGER.warn("Find more than one result with single query of " + prototype.getName());
             throw new IllegalStateException();
         } else {
             return resultList.get(0);

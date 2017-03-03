@@ -1,8 +1,11 @@
 package com.exmertec.yaz.test;
 
 import static com.exmertec.yaz.BaseDao.field;
+import static com.exmertec.yaz.core.OrderType.ASCENDING;
+import static com.exmertec.yaz.core.OrderType.DESCENDING;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.exmertec.yaz.core.OrderType;
 import com.exmertec.yaz.model.User;
 
 import org.junit.Test;
@@ -40,6 +43,28 @@ public class SimpleOptionTest extends TestBase {
         assertThat(result.get(1).getName()).isEqualTo("c");
         assertThat(result.get(2).getName()).isEqualTo("b");
         assertThat(result.get(3).getName()).isEqualTo("a");
+    }
+
+    @Test
+    public void should_accept_order_type() throws Exception {
+        prepareUser("b");
+        prepareUser("c");
+        prepareUser("d");
+        prepareUser("a");
+
+        List<User> result = new UserDao().where().orderBy(DESCENDING, "name").queryList();
+
+        assertThat(result.get(0).getName()).isEqualTo("d");
+        assertThat(result.get(1).getName()).isEqualTo("c");
+        assertThat(result.get(2).getName()).isEqualTo("b");
+        assertThat(result.get(3).getName()).isEqualTo("a");
+
+        result = new UserDao().where().orderBy(ASCENDING, "name").queryList();
+
+        assertThat(result.get(0).getName()).isEqualTo("a");
+        assertThat(result.get(1).getName()).isEqualTo("b");
+        assertThat(result.get(2).getName()).isEqualTo("c");
+        assertThat(result.get(3).getName()).isEqualTo("d");
     }
 
     @Test

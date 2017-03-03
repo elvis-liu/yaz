@@ -10,6 +10,8 @@ public interface AdvancedCommandBuilder<T> extends BasicCommandBuilder<T> {
 
     AdvancedCommandBuilder<T> descendingBy(String... fieldNames);
 
+    AdvancedCommandBuilder<T> orderBy(OrderType orderType, String... fieldNames);
+
     @Override
     AdvancedCommandBuilder<T> lockBy(LockModeType lockModeType);
 
