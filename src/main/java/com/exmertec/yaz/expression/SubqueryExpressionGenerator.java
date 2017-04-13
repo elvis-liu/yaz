@@ -1,8 +1,8 @@
 package com.exmertec.yaz.expression;
 
 import com.exmertec.yaz.core.Query;
+import com.exmertec.yaz.util.ReflectionUtils;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
@@ -38,21 +38,8 @@ public class SubqueryExpressionGenerator<F, T> implements ExpressionGenerator<T>
     }
 
     public static ExpressionGenerator subquery(Class<?> fromType, String targetField, Query... queries) {
-        return new SubqueryExpressionGenerator(fromType, targetField, getField(fromType, targetField),
+        return new SubqueryExpressionGenerator(fromType, targetField, ReflectionUtils.getFieldType(fromType, targetField),
                                                Arrays.asList(queries));
-    }
-
-    private static Class<?> getField(Class<?> fromClass, String targetField) {
-        for (Class<?> cls = fromClass; cls != null; cls = cls.getSuperclass()) {
-            Field[] fields = cls.getDeclaredFields();
-            for (Field field : fields) {
-                if (field.getName().equals(targetField)) {
-                    return field.getDeclaringClass();
-                }
-            }
-        }
-
-        throw new RuntimeException("No field " + targetField + " on class " + fromClass);
     }
 
     private static Predicate[] generateRestrictions(CriteriaBuilder criteriaBuilder, AbstractQuery<?> query,

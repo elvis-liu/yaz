@@ -6,7 +6,7 @@ apply plugin: 'checkstyle'
 apply plugin: 'findbugs'
 
 //version = '0.18-SNAPSHOT'
-version = '0.20'
+version = '0.21'
 group = 'com.exmertec.yaz'
 archivesBaseName = "yaz"
 
