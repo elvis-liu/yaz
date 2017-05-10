@@ -5,8 +5,8 @@ import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 
 public class EqualQuery extends ComplexQueryBase<Object> {
     public EqualQuery(String field, Object value) {
@@ -14,14 +14,14 @@ public class EqualQuery extends ComplexQueryBase<Object> {
     }
 
     @Override
-    protected List<Predicate> doGenerate(CriteriaBuilder criteriaBuilder, Root<?> entity, String field,
+    protected List<Predicate> doGenerate(CriteriaBuilder criteriaBuilder, Path<?> path, String field,
                                          Iterable<Expression<Object>> expressions) {
         Expression<?> expression = expressions.iterator().next();
         Predicate restriction;
         if (expression == null) {
-            restriction = criteriaBuilder.isNull(entity.get(field));
+            restriction = criteriaBuilder.isNull(path.get(field));
         } else {
-            restriction = criteriaBuilder.equal(entity.get(field), expression);
+            restriction = criteriaBuilder.equal(path.get(field), expression);
         }
 
         return Arrays.asList(restriction);

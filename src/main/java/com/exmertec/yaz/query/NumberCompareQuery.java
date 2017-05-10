@@ -7,7 +7,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 
 public class NumberCompareQuery<T extends Number> extends ComplexQueryBase<T> {
     private ExpressionEvaluator evaluator;
@@ -18,10 +17,10 @@ public class NumberCompareQuery<T extends Number> extends ComplexQueryBase<T> {
     }
 
     @Override
-    protected List<Predicate> doGenerate(CriteriaBuilder criteriaBuilder, Root<?> entity, String field,
+    protected List<Predicate> doGenerate(CriteriaBuilder criteriaBuilder, Path<?> path, String field,
                                          Iterable<Expression<T>> expressions) {
         Expression<T> expression = expressions.iterator().next();
-        return Arrays.asList(evaluator.evaluate(criteriaBuilder, entity.<T>get(field), expression));
+        return Arrays.asList(evaluator.evaluate(criteriaBuilder, path.<T>get(field), expression));
     }
 
     @FunctionalInterface

@@ -2,7 +2,6 @@ package com.exmertec.yaz.builder;
 
 import static java.util.stream.Collectors.toList;
 
-
 import com.exmertec.yaz.core.AliasAssigner;
 import com.exmertec.yaz.core.GroupByBuilder;
 
@@ -20,7 +19,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
 public class CoreGroupByBuilder<T> implements GroupByBuilder {
@@ -93,11 +91,11 @@ public class CoreGroupByBuilder<T> implements GroupByBuilder {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tuple> tupleQuery = criteriaBuilder.createTupleQuery();
 
-        Root<T> root = tupleQuery.from(criteriaQueryGenerator.getProtoType());
+        Path<T> root = tupleQuery.from(criteriaQueryGenerator.getProtoType());
         List<Selection<?>> selections = generateMultiSelections(criteriaBuilder, root);
         tupleQuery.multiselect(selections);
         tupleQuery.groupBy(getGroupByExpression(root));
-        tupleQuery.where(criteriaQueryGenerator.generateRestrictions(tupleQuery, criteriaQueryGenerator.getQueries()));
+        tupleQuery.where(criteriaQueryGenerator.generateRestrictions(tupleQuery, criteriaQueryGenerator.getQueries(), root));
         tupleQuery.orderBy(getOrders(criteriaBuilder, root));
 
         TypedQuery<Tuple> query = entityManager.createQuery(tupleQuery);
@@ -110,11 +108,11 @@ public class CoreGroupByBuilder<T> implements GroupByBuilder {
     }
 
 
-    private List<Order> getOrders(CriteriaBuilder criteriaBuilder, Root<T> root) {
+    private List<Order> getOrders(CriteriaBuilder criteriaBuilder, Path<T> path) {
         Stream<Order> fieldOrderStream = criteriaQueryGenerator.getOrderByRules().stream()
-            .map(rule -> rule.getOrder(criteriaBuilder, root));
+            .map(rule -> rule.getOrder(criteriaBuilder, path));
         Stream<Order> aliasOrderStream = aliasOrderByRules.stream()
-            .map(rule -> rule.getAliasOrder(criteriaBuilder, root));
+            .map(rule -> rule.getAliasOrder(criteriaBuilder, path));
 
         return Stream.concat(fieldOrderStream, aliasOrderStream).collect(toList());
     }
@@ -131,15 +129,15 @@ public class CoreGroupByBuilder<T> implements GroupByBuilder {
         return this;
     }
 
-    private List<Expression<?>> getGroupByExpression(Root<T> root) {
-        return groupByFields.stream().map(field -> root.get(field)).collect(toList());
+    private List<Expression<?>> getGroupByExpression(Path<T> path) {
+        return groupByFields.stream().map(path::get).collect(toList());
     }
 
-    private List<Selection<?>> generateMultiSelections(CriteriaBuilder cb, Root<T> root) {
+    private List<Selection<?>> generateMultiSelections(CriteriaBuilder cb, Path<T> path) {
         List<Selection<?>> selections = new ArrayList<>();
-        selections.addAll(groupByFields.stream().map(field -> root.get(field).alias(field)).collect(toList()));
+        selections.addAll(groupByFields.stream().map(field -> path.get(field).alias(field)).collect(toList()));
         selections.addAll(aggregators.stream().map(
-            aggregator -> aggregator.generateSelection(cb, root)).collect(toList()));
+            aggregator -> aggregator.generateSelection(cb, path)).collect(toList()));
         return selections;
     }
 
@@ -163,16 +161,16 @@ public class CoreGroupByBuilder<T> implements GroupByBuilder {
             return field;
         }
 
-        public Selection<?> generateSelection(CriteriaBuilder criteriaBuilder, Root root) {
-            return getExpression(criteriaBuilder, root).alias(alias);
+        public Selection<?> generateSelection(CriteriaBuilder criteriaBuilder, Path<T> path) {
+            return getExpression(criteriaBuilder, path).alias(alias);
         }
 
         public String getAlias() {
             return alias;
         }
 
-        public Expression getExpression(CriteriaBuilder criteriaBuilder, Root<T> root) {
-            return expressionGenerator.generate(criteriaBuilder, root.get(field));
+        public Expression getExpression(CriteriaBuilder criteriaBuilder, Path<T> path) {
+            return expressionGenerator.generate(criteriaBuilder, path.get(field));
         }
     }
 
@@ -190,11 +188,11 @@ public class CoreGroupByBuilder<T> implements GroupByBuilder {
             this.alias = alias;
         }
 
-        public Order getAliasOrder(CriteriaBuilder criteriaBuilder, Root<T> root) {
+        public Order getAliasOrder(CriteriaBuilder criteriaBuilder, Path<T> path) {
             Optional<GroupByAggregator> aggregator = aggregators.stream().filter(
                 agg -> agg.getAlias().equals(alias)).findFirst();
             Expression expression = aggregator.orElseThrow(IllegalStateException::new).getExpression(criteriaBuilder,
-                                                                                                     root);
+                                                                                                     path);
             return isAscending ? criteriaBuilder.asc(expression) : criteriaBuilder.desc(expression);
         }
     }

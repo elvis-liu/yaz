@@ -5,8 +5,7 @@ apply plugin: 'signing'
 apply plugin: 'checkstyle'
 apply plugin: 'findbugs'
 
-//version = '0.18-SNAPSHOT'
-version = '0.21'
+version = '0.22'
 group = 'com.exmertec.yaz'
 archivesBaseName = "yaz"
 

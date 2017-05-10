@@ -1,6 +1,7 @@
 package com.exmertec.yaz.model;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -22,6 +23,9 @@ public class User {
 
     @Column(name = "type")
     private UserType type;
+
+    @Embedded
+    private Contact contact;
 
     public Long getId() {
         return id;
@@ -53,5 +57,13 @@ public class User {
 
     public void setType(UserType type) {
         this.type = type;
+    }
+
+    public Contact getContact() {
+        return contact;
+    }
+
+    public void setContact(Contact contact) {
+        this.contact = contact;
     }
 }

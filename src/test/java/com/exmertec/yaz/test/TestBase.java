@@ -1,6 +1,7 @@
 package com.exmertec.yaz.test;
 
 import com.exmertec.yaz.BaseDao;
+import com.exmertec.yaz.model.Contact;
 import com.exmertec.yaz.model.Order;
 import com.exmertec.yaz.model.User;
 import com.exmertec.yaz.model.UserType;
@@ -95,6 +96,11 @@ public abstract class TestBase {
 
         public UserBuilder type(UserType type) {
             user.setType(type);
+            return this;
+        }
+
+        public UserBuilder contact(Contact contact) {
+            user.setContact(contact);
             return this;
         }
 

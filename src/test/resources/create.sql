@@ -9,5 +9,7 @@ CREATE TABLE IF NOT EXISTS `USER` (
   `id`     BIGINT PRIMARY KEY AUTO_INCREMENT NOT NULL,
   `name`   VARCHAR(64) DEFAULT NULL,
   `points` INT         DEFAULT NULL,
-  `type`   INT         DEFAULT NULL
+  `type`   INT         DEFAULT NULL,
+  `email`  VARCHAR(64) DEFAULT NULL,
+  `city`   VARCHAR(64) DEFAULT NULL,
 );

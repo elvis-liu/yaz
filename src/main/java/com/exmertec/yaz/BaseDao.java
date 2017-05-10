@@ -1,10 +1,12 @@
 package com.exmertec.yaz;
 
 import com.exmertec.yaz.builder.CoreCommandBuilder;
+import com.exmertec.yaz.builder.CorePathBuilder;
 import com.exmertec.yaz.builder.FieldQueryBuilder;
 import com.exmertec.yaz.builder.IdEqualsCommandBuilder;
 import com.exmertec.yaz.core.AdvancedCommandBuilder;
 import com.exmertec.yaz.core.BasicCommandBuilder;
+import com.exmertec.yaz.core.PathBuilder;
 import com.exmertec.yaz.core.Query;
 import com.exmertec.yaz.core.QueryBuilder;
 import com.exmertec.yaz.expression.ExpressionGenerator;
@@ -64,6 +66,10 @@ public class BaseDao<T> {
 
     public static ExpressionGenerator subquery(Class<?> fromType, String targetField, Query... queries) {
         return SubqueryExpressionGenerator.subquery(fromType, targetField, queries);
+    }
+
+    public static PathBuilder embedded(String embeddedField) {
+        return new CorePathBuilder().embedded(embeddedField);
     }
 
     public static Query and(Query... queries) {

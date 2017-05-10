@@ -11,8 +11,8 @@ import java.util.stream.StreamSupport;
 import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 public class SubqueryExpressionGenerator<F, T> implements ExpressionGenerator<T> {
@@ -32,9 +32,9 @@ public class SubqueryExpressionGenerator<F, T> implements ExpressionGenerator<T>
     @Override
     public Expression<T> generate(CriteriaBuilder criteriaBuilder, AbstractQuery<?> query) {
         Subquery<T> subquery = query.subquery(targetFieldType);
-        Root<?> entity = subquery.from(fromType);
-        Predicate[] restrictions = generateRestrictions(criteriaBuilder, subquery, byRestrictions);
-        return subquery.select(entity.<T>get(targetField)).where(restrictions);
+        Path<F> entity = subquery.from(fromType);
+        Predicate[] restrictions = generateRestrictions(criteriaBuilder, subquery, entity, byRestrictions);
+        return subquery.select(entity.get(targetField)).where(restrictions);
     }
 
     public static ExpressionGenerator subquery(Class<?> fromType, String targetField, Query... queries) {
@@ -43,9 +43,10 @@ public class SubqueryExpressionGenerator<F, T> implements ExpressionGenerator<T>
     }
 
     private static Predicate[] generateRestrictions(CriteriaBuilder criteriaBuilder, AbstractQuery<?> query,
-                                                    Iterable<Query> generators) {
+                                                    Path<?> entity, Iterable<Query> generators) {
         return StreamSupport.stream(generators.spliterator(), false)
-            .map(generator -> Optional.of(generator.toRestrictions(criteriaBuilder, query)).orElseGet(ArrayList::new))
+            .map(generator -> Optional.of(generator.toRestrictions(criteriaBuilder, query, entity))
+                .orElseGet(ArrayList::new))
             .flatMap(restrictions -> restrictions.stream())
             .toArray(Predicate[]::new);
     }

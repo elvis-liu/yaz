@@ -2,13 +2,10 @@ package com.exmertec.yaz.builder;
 
 import static java.util.stream.Collectors.toList;
 
-
 import com.exmertec.yaz.core.Query;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -19,6 +16,7 @@ import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
@@ -34,26 +32,10 @@ interface CriteriaQueryGenerator<T> {
 
     EntityManager getEntityManager();
 
-    default Root<T> getRoot(CriteriaQuery<?> criteriaQuery) {
-        Set<Root<?>> roots = criteriaQuery.getRoots();
-        if (roots.size() != 1) {
-            throw new IllegalStateException("Query contains more than one root entity!");
-        }
-
-        return (Root<T>) roots.iterator().next();
-    }
-
-    default <R> CriteriaQuery<R> createQuery(Class<R> resultType) {
-        CriteriaQuery<R> criteriaQuery = getEntityManager().getCriteriaBuilder().createQuery(resultType);
-        criteriaQuery.from(getProtoType());
-
-        return criteriaQuery;
-    }
-
-    default Predicate[] generateRestrictions(AbstractQuery<?> abstractQuery, List<Query> queries) {
+    default Predicate[] generateRestrictions(AbstractQuery<?> abstractQuery, List<Query> queries, Path<T> path) {
         CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         return queries.stream()
-            .map(query -> Optional.of(query.toRestrictions(criteriaBuilder, abstractQuery)).get())
+            .map(query -> query.toRestrictions(criteriaBuilder, abstractQuery, path))
             .flatMap(Collection::stream)
             .toArray(Predicate[]::new);
     }
@@ -65,7 +47,7 @@ interface CriteriaQueryGenerator<T> {
     }
 
     default void appendOrderBy(CriteriaBuilder criteriaBuilder, CriteriaQuery<?> criteria) {
-        final Root<?> entity = criteria.getRoots().iterator().next();
+        final Path<?> entity = criteria.getRoots().iterator().next();
 
         if (!getOrderByRules().isEmpty()) {
             criteria.orderBy(getOrderByRules().stream()
@@ -75,11 +57,12 @@ interface CriteriaQueryGenerator<T> {
     }
 
     default <R> R doQuerySingleForType(Class<R> resultType, Function<Root<T>, Selection<R>> selectionFunction) {
-        CriteriaQuery<R> criteriaQuery = createQuery(resultType);
+        CriteriaQuery<R> criteriaQuery = getEntityManager().getCriteriaBuilder().createQuery(resultType);
+        Root<T> root = criteriaQuery.from(getProtoType());
 
-        criteriaQuery.select(selectionFunction.apply(getRoot(criteriaQuery)));
+        criteriaQuery.select(selectionFunction.apply(root));
 
-        Predicate[] generatedRestrictions = generateRestrictions(criteriaQuery, getQueries());
+        Predicate[] generatedRestrictions = generateRestrictions(criteriaQuery, getQueries(), root);
 
         criteriaQuery.where(generatedRestrictions);
         TypedQuery<R> query = getEntityManager().createQuery(criteriaQuery);
@@ -90,12 +73,14 @@ interface CriteriaQueryGenerator<T> {
 
     default <R> List<R> doQueryListWithSelect(String fieldName, Class<R> resultType,
                                               Consumer<TypedQuery<R>> queryManipulator, boolean isDistinct) {
-        CriteriaQuery<R> criteriaQuery = createQuery(resultType);
-        criteriaQuery.select(getRoot(criteriaQuery).get(fieldName)).distinct(isDistinct);
+        CriteriaQuery<R> criteriaQuery = getEntityManager().getCriteriaBuilder().createQuery(resultType);
+        Root<T> root = criteriaQuery.from(getProtoType());
+
+        criteriaQuery.select(root.get(fieldName)).distinct(isDistinct);
 
         appendOrderBy(getEntityManager().getCriteriaBuilder(), criteriaQuery);
 
-        Predicate[] generatedRestrictions = generateRestrictions(criteriaQuery, getQueries());
+        Predicate[] generatedRestrictions = generateRestrictions(criteriaQuery, getQueries(), root);
 
         criteriaQuery.where(generatedRestrictions);
 
@@ -109,12 +94,14 @@ interface CriteriaQueryGenerator<T> {
     }
 
     default List<T> doQueryList(Consumer<TypedQuery<T>> queryManipulator) {
-        CriteriaQuery<T> criteriaQuery = createQuery(getProtoType());
-        criteriaQuery.select(getRoot(criteriaQuery));
+        CriteriaQuery<T> criteriaQuery = getEntityManager().getCriteriaBuilder().createQuery(getProtoType());
+        Root<T> root = criteriaQuery.from(getProtoType());
+
+        criteriaQuery.select(root);
 
         appendOrderBy(getEntityManager().getCriteriaBuilder(), criteriaQuery);
 
-        Predicate[] generatedRestrictions = generateRestrictions(criteriaQuery, getQueries());
+        Predicate[] generatedRestrictions = generateRestrictions(criteriaQuery, getQueries(), root);
 
         criteriaQuery.where(generatedRestrictions);
 
@@ -136,7 +123,7 @@ interface CriteriaQueryGenerator<T> {
             this.fieldName = fieldName;
         }
 
-        public Order getOrder(CriteriaBuilder criteriaBuilder, Root<?> entity) {
+        public Order getOrder(CriteriaBuilder criteriaBuilder, Path<?> entity) {
             if (isAscending) {
                 return criteriaBuilder.asc(entity.get(fieldName));
             } else {
