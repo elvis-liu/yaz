@@ -19,7 +19,7 @@ public class CorePathBuilder implements PathBuilder {
     }
 
     @Override
-    public PathBuilder embedded(String embeddedField) {
+    public PathBuilder withEmbedded(String embeddedField) {
         cascadedPaths.add(embeddedField);
         return this;
     }

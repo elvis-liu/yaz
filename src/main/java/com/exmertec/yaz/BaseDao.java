@@ -68,8 +68,8 @@ public class BaseDao<T> {
         return SubqueryExpressionGenerator.subquery(fromType, targetField, queries);
     }
 
-    public static PathBuilder embedded(String embeddedField) {
-        return new CorePathBuilder().embedded(embeddedField);
+    public static PathBuilder withEmbedded(String embeddedField) {
+        return new CorePathBuilder().withEmbedded(embeddedField);
     }
 
     public static Query and(Query... queries) {

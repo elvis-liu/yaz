@@ -1,7 +1,7 @@
 package com.exmertec.yaz.test;
 
-import static com.exmertec.yaz.BaseDao.embedded;
 import static com.exmertec.yaz.BaseDao.field;
+import static com.exmertec.yaz.BaseDao.withEmbedded;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.exmertec.yaz.model.Address;
@@ -19,7 +19,7 @@ public class EmbeddedQueryTest extends TestBase {
         buildUser().name("b").contact(new Contact("b@test.com", null)).save();
 
         List<User> users = new UserDao().where(
-            embedded("contact").field("email").eq("a@test.com")
+            withEmbedded("contact").field("email").eq("a@test.com")
         ).queryList();
 
         assertThat(users.size()).isEqualTo(1);
@@ -33,7 +33,7 @@ public class EmbeddedQueryTest extends TestBase {
         buildUser().name("b").contact(new Contact("b@test.com", new Address("city_b"))).save();
 
         List<User> users = new UserDao().where(
-            embedded("contact").embedded("address").field("city").eq("city_b")
+            withEmbedded("contact").withEmbedded("address").field("city").eq("city_b")
         ).queryList();
 
         assertThat(users.size()).isEqualTo(1);
@@ -49,7 +49,7 @@ public class EmbeddedQueryTest extends TestBase {
         buildUser().name("c").contact(new Contact("c@test.com", new Address("city_b"))).save();
 
         List<User> users = new UserDao().where(
-            embedded("contact").embedded("address").field("city").eq("city_b"),
+            withEmbedded("contact").withEmbedded("address").field("city").eq("city_b"),
             field("name").eq("c")
         ).queryList();
 
